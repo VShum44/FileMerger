@@ -7,21 +7,37 @@
 
 <!-- Корневой контейнер -->
 <!-- fx:controller — указываем какой класс управляет этим окном -->
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ListView?>
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="ru.vladify.vshum.filemerger.controller.MainController"
       spacing="10"
       prefWidth="700"
       prefHeight="500">
 
-    <!-- Элементы интерфейса -->
+    <padding>
+        <Insets top="15" right="15" bottom="15" left="15"/>
+    </padding>
+
+    <!-- 1. Заголовок -->
     <Label text="File Merger v1.0"/>
 
-    <Label fx:id="statusLabel" text="Статус: готов"/>
+    <!-- 2. Место для списка файлов -->
+    <ListView fx:id="fileListView" VBox.vgrow="ALWAYS">
+        <placeholder>
+            <Label text="Файлы не добавлены. Нажмите 'Добавить'"/>
+        </placeholder>
+    </ListView>
 
+    <!-- 3. Кнопки -->
     <HBox spacing="8">
         <Button text="Добавить" onAction="#onAddFiles"/>
+        <Button text="Удалить" onAction="#onRemove"/>
         <Button text="Очистить" onAction="#onClear"/>
         <Button text="Склеить"  onAction="#onMerge"/>
     </HBox>
+
+    <!-- 4. Статус внизу -->
+    <Label fx:id="statusLabel" text="Статус: готов"/>
 
 </VBox>

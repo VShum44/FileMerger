@@ -1,24 +1,59 @@
 package ru.vladify.vshum.filemerger.controller;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 
 public class MainController {
 
-    @FXML public Label statusLabel;
+    @FXML private ListView<String> fileListView;
+    @FXML private Label statusLabel;
+    private ObservableList<String> fileNames = FXCollections.observableArrayList();
 
     @FXML
-    public void onAddFiles() {
-        statusLabel.setText("Статус: добавление...");
+    public void initialize() {
+        // Привязываем список к ListView — ОДИН раз при старте
+        fileListView.setItems(fileNames);
+    }
+
+    @FXML
+    private void onAddFiles() {
+        statusLabel.setText(" добавляет \"Тестовый_файл_N.java\"");
+        fileNames.add("Тестовый_файл_" + (fileNames.size() + 1) + ".java");
     }
 
     @FXML
     private void onClear() {
-        statusLabel.setText("Статус: очищено");
+        statusLabel.setText("Очищаем весь список");
+        clear();
     }
 
     @FXML
     private void onMerge() {
-        statusLabel.setText("Статус: склейка...");
+        statusLabel.setText("Пока просто меняет статус");
+    }
+
+    @FXML
+    private void onRemove() {
+        // Получаем что пользователь выделил
+        statusLabel.setText("Удаляется выбранный элемент");
+        String selected = fileListView.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            fileNames.remove(selected);
+            updateStatus();
+        }else {
+            statusLabel.setText("Не выбрано ни одного элемента для удаления");
+        }
+    }
+
+    private void clear(){
+        fileNames.clear();
+        updateStatus();
+    }
+
+    private void updateStatus(){
+        statusLabel.setText("Файлов: " + fileNames.size());
     }
 }
