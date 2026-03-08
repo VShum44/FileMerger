@@ -10,24 +10,25 @@ public class MainController {
 
     @FXML private ListView<String> fileListView;
     @FXML private Label statusLabel;
-    private ObservableList<String> fileNames = FXCollections.observableArrayList();
+    private final ObservableList<String> fileNames = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
         // Привязываем список к ListView — ОДИН раз при старте
         fileListView.setItems(fileNames);
+        updateStatus();
     }
 
     @FXML
     private void onAddFiles() {
-        statusLabel.setText(" добавляет \"Тестовый_файл_N.java\"");
         fileNames.add("Тестовый_файл_" + (fileNames.size() + 1) + ".java");
+        updateStatus();
     }
 
     @FXML
     private void onClear() {
-        statusLabel.setText("Очищаем весь список");
-        clear();
+        fileNames.clear();
+        updateStatus();
     }
 
     @FXML
@@ -46,11 +47,6 @@ public class MainController {
         }else {
             statusLabel.setText("Не выбрано ни одного элемента для удаления");
         }
-    }
-
-    private void clear(){
-        fileNames.clear();
-        updateStatus();
     }
 
     private void updateStatus(){
