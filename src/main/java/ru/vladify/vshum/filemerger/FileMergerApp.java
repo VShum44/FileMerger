@@ -1,22 +1,26 @@
 package ru.vladify.vshum.filemerger;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class FileMergerApp extends Application {
 
     @Override
-    public void start(Stage primaryStage) {
-        Label label = new Label("JavaFX работает!");
-        label.setStyle("-fx-font-size: 24px;");
+    public void start(Stage primaryStage){
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("main-view.fxml"));
 
-        VBox root = new VBox(label);
-        Scene scene = new Scene(root, 400, 200);
+        Scene scene = null;
+        try {
+            scene = new Scene(loader.load());
+        } catch (IOException e) {
+            throw new RuntimeException("Проблема загрузки сцены");
+        }
 
-        primaryStage.setTitle("Тест JavaFX");
+        primaryStage.setTitle("File Merger");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
