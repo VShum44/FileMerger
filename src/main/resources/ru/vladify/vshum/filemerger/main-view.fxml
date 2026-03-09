@@ -20,7 +20,12 @@
     </padding>
 
     <!-- 1. Заголовок -->
+    <HBox spacing="8">
     <Label text="File Merger v1.0"/>
+<!--    <Button text = "Выбрать папку" onAction="#chooseDefaultDirectory"/> // TODO-->
+    <Label fx:id="defaultFolder" text="Папка по умолчанию не выбрана"/>
+
+    </HBox>
 
     <!-- 2. Место для списка файлов -->
     <ListView fx:id="fileListView" VBox.vgrow="ALWAYS">
