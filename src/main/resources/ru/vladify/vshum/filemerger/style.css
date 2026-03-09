@@ -1,0 +1,83 @@
+/* ===== Общие стили ===== */
+.root {
+    -fx-background-color: #f5f5f5;
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-font-size: 13px;
+}
+
+/* ===== Заголовок ===== */
+.title-label {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+}
+
+/* ===== Список файлов ===== */
+.list-view {
+    -fx-background-color: white;
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+/* Ячейка списка при наведении */
+.list-cell:hover {
+    -fx-background-color: #e8f5e9;
+}
+
+/* Выбранная ячейка */
+.list-cell:selected {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+}
+
+/* ===== Кнопки ===== */
+.button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-padding: 8 16;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #45a049;
+}
+
+.button:pressed {
+    -fx-background-color: #388E3C;
+}
+
+/* Кнопка "Очистить" — другой цвет */
+.button-danger {
+    -fx-background-color: #f44336;
+}
+
+.button-danger:hover {
+    -fx-background-color: #e53935;
+}
+
+/* Кнопка "Склеить" — акцентная */
+.button-primary {
+    -fx-background-color: #2196F3;
+}
+
+.button-primary:hover {
+    -fx-background-color: #1e88e5;
+}
+
+/* ===== Статус ===== */
+#statusLabel {
+    -fx-font-size: 12px;
+    -fx-text-fill: #888888;
+    -fx-padding: 4 0 0 0;
+}
+
+/* ===== Drag & Drop подсветка ===== */
+.drag-over {
+    -fx-border-color: #4CAF50;
+    -fx-border-width: 3;
+    -fx-border-style: dashed;
+    -fx-border-radius: 4;
+}

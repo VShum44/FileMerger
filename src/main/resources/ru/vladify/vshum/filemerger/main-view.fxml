@@ -9,6 +9,8 @@
 <!-- fx:controller — указываем какой класс управляет этим окном -->
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Tooltip?>
+
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="ru.vladify.vshum.filemerger.controller.MainController"
       spacing="10"
@@ -20,11 +22,8 @@
     </padding>
 
     <!-- 1. Заголовок -->
-    <HBox spacing="8">
-    <Label text="File Merger v1.0"/>
-<!--        // TODO: добавить выбор папки по умолчанию-->
-
-    </HBox>
+    <Label text="File Merger v1.0" styleClass="title-label"/>
+<!-- TODO: добавить выбор папки по умолчанию-->
 
     <!-- 2. Место для списка файлов -->
     <ListView fx:id="fileListView"
@@ -40,10 +39,29 @@
 
     <!-- 3. Кнопки -->
     <HBox spacing="8">
-        <Button text="Добавить" onAction="#onAddFiles"/>
-        <Button text="Удалить" onAction="#onRemove"/>
-        <Button text="Очистить" onAction="#onClear"/>
-        <Button text="Склеить"  onAction="#onMerge"/>
+        <Button text="Добавить" onAction="#onAddFiles">
+            <tooltip>
+                <Tooltip text="Добавить файлы (Ctrl+O)"/>
+            </tooltip>
+        </Button>
+
+        <Button text="Удалить" onAction="#onRemove" styleClass="button-danger">
+            <tooltip>
+                <Tooltip text="Удалить выбранный (Delete)"/>
+            </tooltip>
+        </Button>
+
+        <Button text="Очистить" onAction="#onClear" styleClass="button-danger">
+            <tooltip>
+                <Tooltip text="Очистить список"/>
+            </tooltip>
+        </Button>
+
+        <Button text="Склеить" onAction="#onMerge" styleClass="button-primary">
+            <tooltip>
+                <Tooltip text="Склеить и сохранить (Ctrl+S)"/>
+            </tooltip>
+        </Button>
     </HBox>
 
     <!-- 4. Статус внизу -->

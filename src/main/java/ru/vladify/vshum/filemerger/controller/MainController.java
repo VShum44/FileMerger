@@ -1,15 +1,15 @@
 package ru.vladify.vshum.filemerger.controller;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
+import javafx.scene.input.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -42,6 +42,8 @@ public class MainController {
 
             }
         });
+        Platform.runLater(this::setupHotkeys);
+
         updateStatus();
     }
 
@@ -50,8 +52,6 @@ public class MainController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Выберите файлы");
 
-        //TODO выбирать папку по умолчанию
-//        fileChooser.setInitialDirectory();
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter(
                         "Исходный код",
@@ -156,6 +156,16 @@ public class MainController {
 
     private void updateStatus(){
         statusLabel.setText("Файлов: " + files.size());
+
+        // Scene может быть null при первом вызове из initialize()
+        if (fileListView.getScene() != null) {
+            Stage stage = (Stage) fileListView.getScene().getWindow();
+            if (files.isEmpty()) {
+                stage.setTitle("File Merger");
+            } else {
+                stage.setTitle("File Merger — %d файл(ов)".formatted(files.size()));
+            }
+        }
     }
 
     private String mergeFiles(List<File> files) throws IOException {
@@ -216,13 +226,13 @@ public class MainController {
     @FXML
     private void onDragEntered(DragEvent event) {
         if (event.getDragboard().hasFiles()) {
-            fileListView.setStyle("-fx-border-color: #4CAF50; -fx-border-width: 3;");
+            fileListView.getStyleClass().add("drag-over");
         }
     }
 
     @FXML
     private void onDragExited(DragEvent event) {
-        fileListView.setStyle("");
+        fileListView.getStyleClass().remove("drag-over");
     }
 
     private boolean isAcceptableFile(File file) {
@@ -253,5 +263,24 @@ public class MainController {
         } else if (isAcceptableFile(fileOrDir) && !files.contains(fileOrDir)) {
             files.add(fileOrDir);
         }
+    }
+
+    private void setupHotkeys() {
+        Scene scene = fileListView.getScene();
+
+        scene.getAccelerators().put(
+                new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN),
+                this::onAddFiles
+        );
+
+        scene.getAccelerators().put(
+                new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN),
+                this::onMerge
+        );
+
+        scene.getAccelerators().put(
+                new KeyCodeCombination(KeyCode.DELETE),
+                this::onRemove
+        );
     }
 }

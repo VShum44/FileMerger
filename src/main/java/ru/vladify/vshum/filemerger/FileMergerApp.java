@@ -20,6 +20,11 @@ public class FileMergerApp extends Application {
             throw new RuntimeException("Проблема загрузки сцены");
         }
 
+        // Подключаем CSS
+        scene.getStylesheets().add(
+                getClass().getResource("style.css").toExternalForm()
+        );
+
         primaryStage.setTitle("File Merger");
         primaryStage.setScene(scene);
         primaryStage.show();
