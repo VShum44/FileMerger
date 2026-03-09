@@ -22,15 +22,19 @@
     <!-- 1. Заголовок -->
     <HBox spacing="8">
     <Label text="File Merger v1.0"/>
-<!--    <Button text = "Выбрать папку" onAction="#chooseDefaultDirectory"/> // TODO-->
-    <Label fx:id="defaultFolder" text="Папка по умолчанию не выбрана"/>
+<!--        // TODO: добавить выбор папки по умолчанию-->
 
     </HBox>
 
     <!-- 2. Место для списка файлов -->
-    <ListView fx:id="fileListView" VBox.vgrow="ALWAYS">
+    <ListView fx:id="fileListView"
+              VBox.vgrow="ALWAYS"
+              onDragOver="#onDragOver"
+              onDragDropped="#onDragDropped"
+              onDragEntered="#onDragEntered"
+              onDragExited="#onDragExited">
         <placeholder>
-            <Label text="Файлы не добавлены. Нажмите 'Добавить'"/>
+            <Label text="Перетащите файлы сюда или нажмите 'Добавить'"/>
         </placeholder>
     </ListView>
 

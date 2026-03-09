@@ -7,6 +7,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -18,7 +21,6 @@ import java.util.List;
 public class MainController {
 
     @FXML private Label statusLabel;
-//    @FXML private Label defaultFolder;
     @FXML private ListView<File> fileListView;
 
     private final ObservableList<File> files = FXCollections.observableArrayList();
@@ -156,12 +158,6 @@ public class MainController {
         statusLabel.setText("Файлов: " + files.size());
     }
 
-//    @FXML
-//    private void chooseDefaultDirectory() {
-//        DirectoryChooser chooser = new DirectoryChooser();
-//        chooser.setTitle("Выбери папку по умолчанию для склейки файлов");
-//    }
-
     private String mergeFiles(List<File> files) throws IOException {
         StringBuilder sb = new StringBuilder();
         String separator = "=".repeat(50);
@@ -189,6 +185,73 @@ public class MainController {
             return "%.1f KB".formatted(bytes / 1024.0);
         } else {
             return "%.1f MB".formatted(bytes / (1024.0 * 1024));
+        }
+    }
+
+    @FXML
+    private void onDragOver(DragEvent event) {
+        if (event.getDragboard().hasFiles()){
+            event.acceptTransferModes(TransferMode.COPY);
+        }
+        event.consume();
+    }
+
+    @FXML
+    private void onDragDropped(DragEvent event) {
+        Dragboard db = event.getDragboard();
+        boolean success = false;
+
+        if (db.hasFiles()) {
+            for (File file : db.getFiles()) {
+                addFilesRecursively(file);
+            }
+            success = true;
+            updateStatus();
+        }
+
+        event.setDropCompleted(success);
+        event.consume();
+    }
+
+    @FXML
+    private void onDragEntered(DragEvent event) {
+        if (event.getDragboard().hasFiles()) {
+            fileListView.setStyle("-fx-border-color: #4CAF50; -fx-border-width: 3;");
+        }
+    }
+
+    @FXML
+    private void onDragExited(DragEvent event) {
+        fileListView.setStyle("");
+    }
+
+    private boolean isAcceptableFile(File file) {
+        if (file.isDirectory()) return false;
+
+        String name = file.getName().toLowerCase();
+        return name.endsWith(".java")
+                || name.endsWith(".gradle")
+                || name.endsWith(".xml")
+                || name.endsWith(".kt")
+                || name.endsWith(".json")
+                || name.endsWith(".yaml")
+                || name.endsWith(".yml")
+                || name.endsWith(".properties")
+                || name.endsWith(".txt")
+                || name.endsWith(".fxml")
+                || name.endsWith(".css");
+    }
+
+    private void addFilesRecursively(File fileOrDir) {
+        if (fileOrDir.isDirectory()) {
+            File[] children = fileOrDir.listFiles();
+            if (children != null) {
+                for (File child : children) {
+                    addFilesRecursively(child);   // рекурсия
+                }
+            }
+        } else if (isAcceptableFile(fileOrDir) && !files.contains(fileOrDir)) {
+            files.add(fileOrDir);
         }
     }
 }
