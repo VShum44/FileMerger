@@ -1,5 +1,9 @@
 package ru.vladify.vshum.filemerger.config;
 
+/**
+ * Перечисление поддерживаемых типов файлов.
+ * Каждый элемент содержит расширение и человекочитаемое описание.
+ */
 public enum FileType {
     JAVA(".java", "Java Source"),
     GRADLE(".gradle", "Gradle Build"),
@@ -30,8 +34,10 @@ public enum FileType {
     }
 
     /**
-     * Проверяет, подходит ли файл под одно из расширений.
-     * @return true если расширение файла есть в enum
+     * Проверяет, поддерживается ли файл по его имени.
+     *
+     * @param fileName имя файла (например "Main.java")
+     * @return true если расширение файла есть в перечислении
      */
     public static boolean isSupported(String fileName) {
         String lower = fileName.toLowerCase();

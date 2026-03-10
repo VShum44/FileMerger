@@ -29,6 +29,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
+/**
+ * Главный контроллер приложения File Merger.
+ * Управляет списком файлов, drag & drop, склейкой и сохранением.
+ */
 public class MainController {
 
     private static final Logger log = LoggerFactory.getLogger(MainController.class);

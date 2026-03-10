@@ -8,7 +8,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
-
+/**
+ * Реализация {@link MergeService} — склейка в текстовый формат с разделителями.
+ *
+ * <p>Каждый файл оборачивается в блок с заголовком (имя, путь, размер),
+ * разделённый строкой из символов '='.</p>
+ */
 public class FileMergerService implements MergeService {
 
     private static final Logger log = LoggerFactory.getLogger(FileMergerService.class);

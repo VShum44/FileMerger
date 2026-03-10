@@ -8,6 +8,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Сервис для работы с файлами — проверка расширений и рекурсивный сбор.
+ */
 public class FileService {
 
     private static final Logger log = LoggerFactory.getLogger(FileService.class);
@@ -16,7 +19,15 @@ public class FileService {
         if (file.isDirectory()) return false;
         return FileType.isSupported(file.getName());
     }
-
+    /**
+     * Рекурсивно собирает файлы с поддерживаемыми расширениями.
+     *
+     * <p>Если передан файл — проверяет расширение и возвращает список из одного элемента
+     * или пустой список. Если передана папка — обходит рекурсивно все подпапки.</p>
+     *
+     * @param fileOrDir файл или директория для обхода
+     * @return список файлов с поддерживаемыми расширениями (может быть пустым)
+     */
     public List<File> collectFiles(File fileOrDir) {
         List<File> result = new ArrayList<>();
         collectRecursively(fileOrDir, result);
