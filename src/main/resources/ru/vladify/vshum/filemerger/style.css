@@ -87,3 +87,17 @@
     -fx-hide-delay: 100ms;
     -fx-font-size: 12px;
 }
+
+/* ===== ComboBox сортировки ===== */
+.combo-box {
+    -fx-background-color: white;
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 4 8;
+    -fx-cursor: hand;
+}
+
+.combo-box:hover {
+    -fx-border-color: #4CAF50;
+}

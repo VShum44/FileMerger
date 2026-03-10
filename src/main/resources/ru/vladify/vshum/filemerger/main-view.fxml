@@ -11,6 +11,7 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Tooltip?>
 
+<?import javafx.scene.control.ComboBox?>
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="ru.vladify.vshum.filemerger.controller.MainController"
       spacing="10"
@@ -62,6 +63,10 @@
                 <Tooltip text="Склеить и сохранить (Ctrl+S)"/>
             </tooltip>
         </Button>
+
+        <ComboBox fx:id="sortComboBox" onAction="#onSortChanged">
+            <tooltip><Tooltip text="Сортировка списка"/></tooltip>
+        </ComboBox>
     </HBox>
 
     <!-- 4. Статус внизу -->

@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ComboBox;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
@@ -19,6 +20,7 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.vladify.vshum.filemerger.config.AppConfig;
+import ru.vladify.vshum.filemerger.config.SortOrder;
 import ru.vladify.vshum.filemerger.service.FileMergerService;
 import ru.vladify.vshum.filemerger.service.FileService;
 import ru.vladify.vshum.filemerger.service.MergeService;
@@ -39,6 +41,7 @@ public class MainController {
 
     @FXML private Label statusLabel;
     @FXML private ListView<File> fileListView;
+    @FXML private ComboBox<SortOrder> sortComboBox;
 
     private final ObservableList<File> files = FXCollections.observableArrayList();
 
@@ -63,8 +66,12 @@ public class MainController {
 
             }
         });
-        Platform.runLater(this::setupHotkeys);
 
+        // Настройка ComboBox сортировки
+        sortComboBox.getItems().addAll(SortOrder.values());
+        sortComboBox.setValue(SortOrder.NAME);
+
+        Platform.runLater(this::setupHotkeys);
         updateStatus();
 
         log.debug("Контроллер инициализирован, горячие клавиши настроены");
@@ -95,6 +102,7 @@ public class MainController {
                     files.add(file);
                 }
             }
+            applySort();
             updateStatus();
         }
     }
@@ -210,6 +218,7 @@ public class MainController {
                 }
             }
             success = true;
+            applySort();
             updateStatus();
         }
 
@@ -246,5 +255,18 @@ public class MainController {
                 new KeyCodeCombination(KeyCode.DELETE),
                 this::onRemove
         );
+    }
+
+    @FXML
+    private void onSortChanged() {
+        applySort();
+        log.info("Сортировка: {}", sortComboBox.getValue());
+    }
+
+    private void applySort() {
+        SortOrder selected = sortComboBox.getValue();
+        if (selected != null && !files.isEmpty()) {
+            FXCollections.sort(files, selected.getComparator());
+        }
     }
 }
