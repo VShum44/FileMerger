@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import ru.vladify.vshum.filemerger.config.AppConfig;
 
 import java.io.IOException;
 
@@ -25,7 +26,7 @@ public class FileMergerApp extends Application {
                 getClass().getResource("style.css").toExternalForm()
         );
 
-        primaryStage.setTitle("File Merger");
+        primaryStage.setTitle(AppConfig.APP_TITLE);
         primaryStage.setScene(scene);
         primaryStage.show();
     }

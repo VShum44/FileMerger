@@ -1,30 +1,16 @@
 package ru.vladify.vshum.filemerger.service;
 
+import ru.vladify.vshum.filemerger.config.FileType;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class FileService {
 
-    private final static List<String> ACCEPTED_EXTENSIONS = List.of(
-            ".java",
-            ".gradle",
-            ".xml",
-            ".kt",
-            ".json",
-            ".yaml",
-            ".yml",
-            ".properties",
-            ".txt",
-            ".fxml",
-            ".css"
-    );
-
     private boolean isAcceptable(File file) {
         if (file.isDirectory()) return false;
-        String name = file.getName();
-        return ACCEPTED_EXTENSIONS.stream().anyMatch(name::endsWith);
+        return FileType.isSupported(file.getName());
     }
 
     public List<File> collectFiles(File fileOrDir) {

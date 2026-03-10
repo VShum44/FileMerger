@@ -17,6 +17,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyCode;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import ru.vladify.vshum.filemerger.config.AppConfig;
 import ru.vladify.vshum.filemerger.service.FileMergerService;
 import ru.vladify.vshum.filemerger.service.FileService;
 
@@ -118,7 +119,7 @@ public class MainController {
         // 3. Диалог сохранения
         FileChooser saveChooser = new FileChooser();
         saveChooser.setTitle("Сохранить результат");
-        saveChooser.setInitialFileName("merged_output.txt");
+        saveChooser.setInitialFileName(AppConfig.DEFAULT_OUTPUT_NAME);
         saveChooser.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("Текстовый файл", "*.txt")
         );
@@ -171,9 +172,9 @@ public class MainController {
         if (fileListView.getScene() != null) {
             Stage stage = (Stage) fileListView.getScene().getWindow();
             if (files.isEmpty()) {
-                stage.setTitle("File Merger");
+                stage.setTitle(AppConfig.APP_NAME);
             } else {
-                stage.setTitle("File Merger — %d файл(ов)".formatted(files.size()));
+                stage.setTitle("%s — %d файл(ов)".formatted(AppConfig.APP_NAME, files.size()));
             }
         }
     }
