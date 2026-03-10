@@ -81,3 +81,9 @@
     -fx-border-style: dashed;
     -fx-border-radius: 4;
 }
+
+.tooltip {
+    -fx-show-delay: 200ms;
+    -fx-hide-delay: 100ms;
+    -fx-font-size: 12px;
+}

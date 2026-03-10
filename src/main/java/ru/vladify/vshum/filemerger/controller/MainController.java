@@ -9,9 +9,16 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.input.*;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.TransferMode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyCode;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import ru.vladify.vshum.filemerger.service.FileMergerService;
+import ru.vladify.vshum.filemerger.service.FileService;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +31,9 @@ public class MainController {
     @FXML private ListView<File> fileListView;
 
     private final ObservableList<File> files = FXCollections.observableArrayList();
+
+    private final FileMergerService fileMergerService = new FileMergerService();
+    private final FileService fileService = new FileService();
 
     @FXML
     public void initialize() {
@@ -95,7 +105,7 @@ public class MainController {
         // 2. Склейка
         String mergedContent;
         try {
-            mergedContent = mergeFiles(files);
+            mergedContent = fileMergerService.mergeFiles(files);
         } catch (IOException e) {
             Alert error = new Alert(Alert.AlertType.ERROR);
             error.setTitle("Ошибка чтения");
@@ -168,36 +178,6 @@ public class MainController {
         }
     }
 
-    private String mergeFiles(List<File> files) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        String separator = "=".repeat(50);
-        int total = files.size();
-
-        for (int i = 0; i < total; i++) {
-            File file = files.get(i);
-            String content = Files.readString(file.toPath());
-
-            sb.append(separator).append("\n");
-            sb.append("=== [%d/%d] Файл: %s\n".formatted(i + 1, total, file.getName()));
-            sb.append("=== Путь: %s\n".formatted(file.getAbsolutePath()));
-            sb.append("=== Размер: %s\n".formatted(formatSize(file.length())));
-            sb.append(separator).append("\n\n");
-            sb.append(content).append("\n\n");
-        }
-
-        return sb.toString();
-    }
-
-    private String formatSize(long bytes) {
-        if (bytes < 1024) {
-            return bytes + " B";
-        } else if (bytes < 1024 * 1024) {
-            return "%.1f KB".formatted(bytes / 1024.0);
-        } else {
-            return "%.1f MB".formatted(bytes / (1024.0 * 1024));
-        }
-    }
-
     @FXML
     private void onDragOver(DragEvent event) {
         if (event.getDragboard().hasFiles()){
@@ -213,7 +193,12 @@ public class MainController {
 
         if (db.hasFiles()) {
             for (File file : db.getFiles()) {
-                addFilesRecursively(file);
+                List<File> collected = fileService.collectFiles(file);
+                for (File f : collected) {
+                    if(!files.contains(f)){
+                        files.add(f);
+                    }
+                }
             }
             success = true;
             updateStatus();
@@ -233,36 +218,6 @@ public class MainController {
     @FXML
     private void onDragExited(DragEvent event) {
         fileListView.getStyleClass().remove("drag-over");
-    }
-
-    private boolean isAcceptableFile(File file) {
-        if (file.isDirectory()) return false;
-
-        String name = file.getName().toLowerCase();
-        return name.endsWith(".java")
-                || name.endsWith(".gradle")
-                || name.endsWith(".xml")
-                || name.endsWith(".kt")
-                || name.endsWith(".json")
-                || name.endsWith(".yaml")
-                || name.endsWith(".yml")
-                || name.endsWith(".properties")
-                || name.endsWith(".txt")
-                || name.endsWith(".fxml")
-                || name.endsWith(".css");
-    }
-
-    private void addFilesRecursively(File fileOrDir) {
-        if (fileOrDir.isDirectory()) {
-            File[] children = fileOrDir.listFiles();
-            if (children != null) {
-                for (File child : children) {
-                    addFilesRecursively(child);   // рекурсия
-                }
-            }
-        } else if (isAcceptableFile(fileOrDir) && !files.contains(fileOrDir)) {
-            files.add(fileOrDir);
-        }
     }
 
     private void setupHotkeys() {
