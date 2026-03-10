@@ -7,9 +7,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
-public class FileMergerService {
+public class FileMergerService implements MergeService {
 
-    public String mergeFiles(List<File> files) throws IOException {
+    @Override
+    public String merge(List<File> files) throws IOException {
         StringBuilder sb = new StringBuilder();
         int total = files.size();
 

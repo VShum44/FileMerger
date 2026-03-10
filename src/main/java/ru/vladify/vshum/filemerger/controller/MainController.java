@@ -5,7 +5,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -20,6 +19,8 @@ import javafx.stage.Stage;
 import ru.vladify.vshum.filemerger.config.AppConfig;
 import ru.vladify.vshum.filemerger.service.FileMergerService;
 import ru.vladify.vshum.filemerger.service.FileService;
+import ru.vladify.vshum.filemerger.service.MergeService;
+import ru.vladify.vshum.filemerger.util.DialogHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class MainController {
 
     private final ObservableList<File> files = FXCollections.observableArrayList();
 
-    private final FileMergerService fileMergerService = new FileMergerService();
+    private final MergeService fileMergerService = new FileMergerService();
     private final FileService fileService = new FileService();
 
     @FXML
@@ -95,24 +96,16 @@ public class MainController {
     private void onMerge() {
         // 1. Проверка — список пуст?
         if (files.isEmpty()) {
-            Alert warning = new Alert(Alert.AlertType.WARNING);
-            warning.setTitle("Внимание");
-            warning.setHeaderText(null);
-            warning.setContentText("Список файлов пуст!");
-            warning.showAndWait();
+            DialogHelper.showWarning("Внимание", "Список файлов пуст!");
             return;
         }
 
         // 2. Склейка
         String mergedContent;
         try {
-            mergedContent = fileMergerService.mergeFiles(files);
+            mergedContent = fileMergerService.merge(files);
         } catch (IOException e) {
-            Alert error = new Alert(Alert.AlertType.ERROR);
-            error.setTitle("Ошибка чтения");
-            error.setHeaderText("Не удалось прочитать файл");
-            error.setContentText(e.getMessage());
-            error.showAndWait();
+            DialogHelper.showError("Ошибка чтения", "Не удалось прочитать файл", e.getMessage());
             return;
         }
 
@@ -135,20 +128,12 @@ public class MainController {
         try {
             Files.writeString(outputFile.toPath(), mergedContent);
         } catch (IOException e) {
-            Alert error = new Alert(Alert.AlertType.ERROR);
-            error.setTitle("Ошибка записи");
-            error.setHeaderText("Не удалось сохранить файл");
-            error.setContentText(e.getMessage());
-            error.showAndWait();
+            DialogHelper.showError("Ошибка записи", "Не удалось сохранить файл", e.getMessage());
             return;
         }
 
         // 5. Успех
-        Alert info = new Alert(Alert.AlertType.INFORMATION);
-        info.setTitle("Готово");
-        info.setHeaderText(null);
-        info.setContentText("Файл сохранён: " + outputFile.getName());
-        info.showAndWait();
+        DialogHelper.showInfo("Готово", "Файл сохранён: " + outputFile.getName());
 
         statusLabel.setText("Сохранено: " + outputFile.getName());
     }
