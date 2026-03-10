@@ -2,10 +2,11 @@ plugins {
     id 'java'
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.1.0'
+    id 'com.gradleup.shadow' version '9.0.0-beta12'
 }
 
 group = 'ru.vladify.vshum'
-version = '1.0-SNAPSHOT'
+version = '1.0'
 
 repositories {
     mavenCentral()
@@ -17,6 +18,9 @@ java {
 }
 
 dependencies {
+    implementation 'org.slf4j:slf4j-api:2.0.9'
+    implementation 'ch.qos.logback:logback-classic:1.4.14'
+
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -32,5 +36,16 @@ javafx {
 }
 
 application {
-    mainClass = 'com.merger.Launcher'
+    mainClass = 'ru.vladify.vshum.filemerger.Launcher'
+}
+
+shadowJar {
+    archiveBaseName.set('FileMerger')
+    archiveVersion.set('')
+    archiveClassifier.set('')
+    mergeServiceFiles()
+
+    manifest {
+        attributes('Main-Class': 'ru.vladify.vshum.filemerger.Launcher')
+    }
 }

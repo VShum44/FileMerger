@@ -1,5 +1,7 @@
 package ru.vladify.vshum.filemerger.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.vladify.vshum.filemerger.config.AppConfig;
 
 import java.io.File;
@@ -9,13 +11,17 @@ import java.util.List;
 
 public class FileMergerService implements MergeService {
 
+    private static final Logger log = LoggerFactory.getLogger(FileMergerService.class);
+
     @Override
     public String merge(List<File> files) throws IOException {
+        log.info("Склейка {} файлов", files.size());
         StringBuilder sb = new StringBuilder();
         int total = files.size();
 
         for (int i = 0; i < total; i++) {
             File file = files.get(i);
+            log.debug("Обработка [{}/{}]: {}", i + 1, total, file.getName());
             String content = Files.readString(file.toPath());
 
             sb.append(AppConfig.SEPARATOR).append("\n");
@@ -25,7 +31,7 @@ public class FileMergerService implements MergeService {
             sb.append(AppConfig.SEPARATOR).append("\n\n");
             sb.append(content).append("\n\n");
         }
-
+        log.info("Склейка завершена, результат: {} символов", sb.length());
         return sb.toString();
     }
 

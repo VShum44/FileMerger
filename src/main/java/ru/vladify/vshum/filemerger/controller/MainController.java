@@ -16,6 +16,8 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyCode;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.vladify.vshum.filemerger.config.AppConfig;
 import ru.vladify.vshum.filemerger.service.FileMergerService;
 import ru.vladify.vshum.filemerger.service.FileService;
@@ -29,6 +31,8 @@ import java.util.List;
 
 public class MainController {
 
+    private static final Logger log = LoggerFactory.getLogger(MainController.class);
+
     @FXML private Label statusLabel;
     @FXML private ListView<File> fileListView;
 
@@ -39,6 +43,7 @@ public class MainController {
 
     @FXML
     public void initialize() {
+        log.info("Инициализация контроллера");
         // Привязываем список к ListView — ОДИН раз при старте
         fileListView.setItems(files);
         fileListView.setCellFactory(param -> new ListCell<>(){
@@ -57,10 +62,13 @@ public class MainController {
         Platform.runLater(this::setupHotkeys);
 
         updateStatus();
+
+        log.debug("Контроллер инициализирован, горячие клавиши настроены");
     }
 
     @FXML
     private void onAddFiles() {
+        log.debug("Открытие диалога добавления файлов");
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Выберите файлы");
 
@@ -77,6 +85,7 @@ public class MainController {
         List<File> selectedFiles = fileChooser.showOpenMultipleDialog(stage);
 
         if (selectedFiles != null) {
+            log.info("Добавлено файлов: {}", selectedFiles.size());
             for (File file : selectedFiles) {
                 if (!files.contains(file)) {
                     files.add(file);
@@ -88,14 +97,17 @@ public class MainController {
 
     @FXML
     private void onClear() {
+        log.info("Список очищен ({} файлов удалено)", files.size());
         files.clear();
         updateStatus();
     }
 
     @FXML
     private void onMerge() {
+        log.info("Начинаю склейку {} файлов", files.size());
         // 1. Проверка — список пуст?
         if (files.isEmpty()) {
+            log.warn("Попытка склейки пустого списка");
             DialogHelper.showWarning("Внимание", "Список файлов пуст!");
             return;
         }
@@ -104,7 +116,9 @@ public class MainController {
         String mergedContent;
         try {
             mergedContent = fileMergerService.merge(files);
+            log.info("Склейка завершена успешно");
         } catch (IOException e) {
+            log.error("Ошибка чтения файла", e);
             DialogHelper.showError("Ошибка чтения", "Не удалось прочитать файл", e.getMessage());
             return;
         }
@@ -127,7 +141,9 @@ public class MainController {
         // 4. Запись в файл
         try {
             Files.writeString(outputFile.toPath(), mergedContent);
+            log.info("Файл сохранён: {}", outputFile.getAbsolutePath());
         } catch (IOException e) {
+            log.error("Ошибка записи файла: {}", outputFile.getAbsolutePath(), e);
             DialogHelper.showError("Ошибка записи", "Не удалось сохранить файл", e.getMessage());
             return;
         }
@@ -143,9 +159,11 @@ public class MainController {
         // Получаем что пользователь выделил
         File selected = fileListView.getSelectionModel().getSelectedItem();
         if (selected != null) {
+            log.debug("Удалён файл: {}", selected.getName());
             files.remove(selected);
             updateStatus();
         }else {
+            log.debug("Попытка удаления без выделения");
             statusLabel.setText("Не выбрано ни одного элемента для удаления");
         }
     }
@@ -178,6 +196,7 @@ public class MainController {
         boolean success = false;
 
         if (db.hasFiles()) {
+            log.info("Drag & Drop: получено {} элементов", db.getFiles().size());
             for (File file : db.getFiles()) {
                 List<File> collected = fileService.collectFiles(file);
                 for (File f : collected) {
