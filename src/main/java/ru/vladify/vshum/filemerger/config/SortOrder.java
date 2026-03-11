@@ -1,5 +1,7 @@
 package ru.vladify.vshum.filemerger.config;
 
+import ru.vladify.vshum.filemerger.model.FileInfo;
+
 import java.io.File;
 import java.util.Comparator;
 
@@ -9,16 +11,18 @@ import java.util.Comparator;
  */
 public enum SortOrder {
     NAME("По имени",
-            Comparator.comparing(File::getName, String.CASE_INSENSITIVE_ORDER)),
+            Comparator.comparing(FileInfo::getName, String.CASE_INSENSITIVE_ORDER)),
     EXTENSION("По расширению",
-            Comparator.comparing((File file) -> getExtension(file.getName()),String.CASE_INSENSITIVE_ORDER)),
+            Comparator.comparing((FileInfo fi) -> getExtension(fi.getName()),String.CASE_INSENSITIVE_ORDER)),
     PATH("По пути",
-            Comparator.comparing(File::getPath, String.CASE_INSENSITIVE_ORDER));
+            Comparator.comparing(FileInfo::getAbsolutePath, String.CASE_INSENSITIVE_ORDER)),
+    LINES("По кол-ву строк", Comparator.comparingLong(FileInfo::getLineCount)),
+    SIZE("По размеру", Comparator.comparingLong(FileInfo::getSize));
 
     private final String displayName;
-    private final Comparator<File> comparator;
+    private final Comparator<FileInfo> comparator;
 
-    SortOrder(String displayName, Comparator<File> comparator) {
+    SortOrder(String displayName, Comparator<FileInfo> comparator) {
         this.displayName = displayName;
         this.comparator = comparator;
     }
@@ -32,7 +36,7 @@ public enum SortOrder {
         return displayName;
     }
 
-    public Comparator<File> getComparator() {
+    public Comparator<FileInfo> getComparator() {
         return comparator;
     }
 

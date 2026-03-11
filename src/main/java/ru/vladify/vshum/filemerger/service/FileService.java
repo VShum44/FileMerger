@@ -3,8 +3,11 @@ package ru.vladify.vshum.filemerger.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.vladify.vshum.filemerger.config.FileType;
+import ru.vladify.vshum.filemerger.model.FileInfo;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,9 +18,20 @@ public class FileService {
 
     private static final Logger log = LoggerFactory.getLogger(FileService.class);
 
-    private boolean isAcceptable(File file) {
-        if (file.isDirectory()) return false;
-        return FileType.isSupported(file.getName());
+    /**
+     * Создаёт {@link FileInfo} для файла, подсчитывая количество строк.
+     *
+     * @param file файл для анализа
+     * @return FileInfo с информацией о файле
+     */
+    public FileInfo createFileInfo(File file) {
+        long lines = 0;
+        try {
+            lines = Files.lines(file.toPath()).count();
+        } catch (IOException e) {
+            log.warn("Не удалось подсчитать строки: {}", file.getName(), e);
+        }
+        return new FileInfo(file, lines, file.length());
     }
     /**
      * Рекурсивно собирает файлы с поддерживаемыми расширениями.
@@ -46,5 +60,10 @@ public class FileService {
         } else if (isAcceptable(fileOrDir)) {
             result.add(fileOrDir);    // добавляем в СВОЙ result
         }
+    }
+
+    private boolean isAcceptable(File file) {
+        if (file.isDirectory()) return false;
+        return FileType.isSupported(file.getName());
     }
 }

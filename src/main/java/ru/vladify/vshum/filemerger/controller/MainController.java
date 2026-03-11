@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.vladify.vshum.filemerger.config.AppConfig;
 import ru.vladify.vshum.filemerger.config.SortOrder;
+import ru.vladify.vshum.filemerger.model.FileInfo;
 import ru.vladify.vshum.filemerger.service.FileMergerService;
 import ru.vladify.vshum.filemerger.service.FileService;
 import ru.vladify.vshum.filemerger.service.MergeService;
@@ -40,10 +41,10 @@ public class MainController {
     private static final Logger log = LoggerFactory.getLogger(MainController.class);
 
     @FXML private Label statusLabel;
-    @FXML private ListView<File> fileListView;
+    @FXML private ListView<FileInfo> fileListView;
     @FXML private ComboBox<SortOrder> sortComboBox;
 
-    private final ObservableList<File> files = FXCollections.observableArrayList();
+    private final ObservableList<FileInfo> files = FXCollections.observableArrayList();
 
     private final MergeService fileMergerService = new FileMergerService();
     private final FileService fileService = new FileService();
@@ -55,15 +56,18 @@ public class MainController {
         fileListView.setItems(files);
         fileListView.setCellFactory(param -> new ListCell<>(){
             @Override
-            protected void updateItem(File file, boolean empty){
-                super.updateItem(file, empty);
-
-                if (empty || file == null){
+            protected void updateItem(FileInfo info, boolean empty) {
+                super.updateItem(info, empty);
+                if (empty || info == null) {
                     setText(null);
-                }else {
-                    setText("%s     (%s)".formatted(file.getName(), file.getParent()));
+                } else {
+                    setText("%s  [%d строк]  (%s) [%d размер]".formatted(
+                            info.getName(),
+                            info.getLineCount(),
+                            info.getParent(),
+                            info.getSize()
+                    ));
                 }
-
             }
         });
 
@@ -80,9 +84,9 @@ public class MainController {
     @FXML
     private void onAddFiles() {
         log.debug("Открытие диалога добавления файлов");
+
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Выберите файлы");
-
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter(
                         "Исходный код",
@@ -98,8 +102,9 @@ public class MainController {
         if (selectedFiles != null) {
             log.info("Добавлено файлов: {}", selectedFiles.size());
             for (File file : selectedFiles) {
-                if (!files.contains(file)) {
-                    files.add(file);
+                FileInfo info = fileService.createFileInfo(file);
+                if (!files.contains(info)) {
+                    files.add(info);
                 }
             }
             applySort();
@@ -169,7 +174,7 @@ public class MainController {
     @FXML
     private void onRemove() {
         // Получаем что пользователь выделил
-        File selected = fileListView.getSelectionModel().getSelectedItem();
+        FileInfo selected = fileListView.getSelectionModel().getSelectedItem();
         if (selected != null) {
             log.debug("Удалён файл: {}", selected.getName());
             files.remove(selected);
@@ -180,19 +185,22 @@ public class MainController {
         }
     }
 
-    private void updateStatus(){
-        statusLabel.setText("Файлов: " + files.size());
+    private void updateStatus() {
+        long totalLines = files.stream().mapToLong(FileInfo::getLineCount).sum();
+        statusLabel.setText("Файлов: %d | Строк: %d".formatted(files.size(), totalLines));
 
-        // Scene может быть null при первом вызове из initialize()
         if (fileListView.getScene() != null) {
             Stage stage = (Stage) fileListView.getScene().getWindow();
             if (files.isEmpty()) {
                 stage.setTitle(AppConfig.APP_NAME);
             } else {
-                stage.setTitle("%s — %d файл(ов)".formatted(AppConfig.APP_NAME, files.size()));
+                stage.setTitle("%s — %d файл(ов), %d строк".formatted(
+                        AppConfig.APP_NAME, files.size(), totalLines
+                ));
             }
         }
     }
+
 
     @FXML
     private void onDragOver(DragEvent event) {
@@ -212,8 +220,9 @@ public class MainController {
             for (File file : db.getFiles()) {
                 List<File> collected = fileService.collectFiles(file);
                 for (File f : collected) {
-                    if(!files.contains(f)){
-                        files.add(f);
+                    FileInfo info = fileService.createFileInfo(f);
+                    if(!files.contains(info)){
+                        files.add(info);
                     }
                 }
             }
