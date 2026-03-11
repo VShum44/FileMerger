@@ -2,7 +2,6 @@ package ru.vladify.vshum.filemerger.service;
 
 import ru.vladify.vshum.filemerger.model.FileInfo;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 

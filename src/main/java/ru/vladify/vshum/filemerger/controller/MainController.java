@@ -61,11 +61,12 @@ public class MainController {
                 if (empty || info == null) {
                     setText(null);
                 } else {
-                    setText("%s  [%d строк]  (%s) [%d размер]".formatted(
+                    setText("%s  [%d строк · %s]  (%s) ".formatted(
                             info.getName(),
                             info.getLineCount(),
-                            info.getParent(),
-                            info.getSize()
+                            FileInfo.formatSize(info.getSize()),
+                            info.getParent()
+
                     ));
                 }
             }
@@ -187,15 +188,21 @@ public class MainController {
 
     private void updateStatus() {
         long totalLines = files.stream().mapToLong(FileInfo::getLineCount).sum();
-        statusLabel.setText("Файлов: %d | Строк: %d".formatted(files.size(), totalLines));
+        long totalSize = files.stream().mapToLong(FileInfo::getSize).sum();
+
+        String formattedSize = FileInfo.formatSize(totalSize);
+
+        statusLabel.setText("Файлов: %d | Строк: %d | Размер: %s".formatted(
+                files.size(), totalLines, formattedSize
+        ));
 
         if (fileListView.getScene() != null) {
             Stage stage = (Stage) fileListView.getScene().getWindow();
             if (files.isEmpty()) {
                 stage.setTitle(AppConfig.APP_NAME);
             } else {
-                stage.setTitle("%s — %d файл(ов), %d строк".formatted(
-                        AppConfig.APP_NAME, files.size(), totalLines
+                stage.setTitle("%s — %d файл(ов), %d строк, %s".formatted(
+                        AppConfig.APP_NAME, files.size(), totalLines, formattedSize
                 ));
             }
         }
@@ -218,11 +225,10 @@ public class MainController {
         if (db.hasFiles()) {
             log.info("Drag & Drop: получено {} элементов", db.getFiles().size());
             for (File file : db.getFiles()) {
-                List<File> collected = fileService.collectFiles(file);
-                for (File f : collected) {
-                    FileInfo info = fileService.createFileInfo(f);
-                    if(!files.contains(info)){
-                        files.add(info);
+                List<FileInfo> collected = fileService.collectFiles(file);
+                for (FileInfo fi : collected) {
+                    if(!files.contains(fi)){
+                        files.add(fi);
                     }
                 }
             }

@@ -35,21 +35,19 @@ public class FileService {
     }
     /**
      * Рекурсивно собирает файлы с поддерживаемыми расширениями.
-     *
-     * <p>Если передан файл — проверяет расширение и возвращает список из одного элемента
-     * или пустой список. Если передана папка — обходит рекурсивно все подпапки.</p>
+     * Для каждого файла подсчитывает количество строк и размер.
      *
      * @param fileOrDir файл или директория для обхода
-     * @return список файлов с поддерживаемыми расширениями (может быть пустым)
+     * @return список {@link FileInfo} с информацией о файлах
      */
-    public List<File> collectFiles(File fileOrDir) {
-        List<File> result = new ArrayList<>();
+    public List<FileInfo> collectFiles(File fileOrDir) {
+        List<FileInfo> result = new ArrayList<>();
         collectRecursively(fileOrDir, result);
         log.debug("Собрано {} файлов из {}", result.size(), fileOrDir.getAbsolutePath());
         return result;
     }
 
-    private void collectRecursively(File fileOrDir, List<File> result) {
+    private void collectRecursively(File fileOrDir, List<FileInfo> result) {
         if (fileOrDir.isDirectory()) {
             File[] children = fileOrDir.listFiles();
             if (children != null) {
@@ -58,7 +56,7 @@ public class FileService {
                 }
             }
         } else if (isAcceptable(fileOrDir)) {
-            result.add(fileOrDir);    // добавляем в СВОЙ result
+            result.add(createFileInfo(fileOrDir));    // добавляем в СВОЙ result
         }
     }
 

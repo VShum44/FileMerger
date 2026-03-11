@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import ru.vladify.vshum.filemerger.config.AppConfig;
 import ru.vladify.vshum.filemerger.model.FileInfo;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
@@ -37,7 +36,7 @@ public class FileMergerService implements MergeService {
             sb.append(AppConfig.SEPARATOR).append("\n");
             sb.append("=== [%d/%d] Файл: %s\n".formatted(i + 1, total, info.getName()));
             sb.append("=== Путь: %s\n".formatted(info.getAbsolutePath()));
-            sb.append("=== Размер: %s\n".formatted(formatSize(info.getSize())));
+            sb.append("=== Размер: %s\n".formatted(FileInfo.formatSize(info.getSize())));
             sb.append("=== Строк: %d\n".formatted(info.getLineCount()));
             sb.append(AppConfig.SEPARATOR).append("\n\n");
             sb.append(content).append("\n\n");
@@ -50,20 +49,10 @@ public class FileMergerService implements MergeService {
         sb.append("=== ИТОГО\n");
         sb.append("=== Файлов: %d\n".formatted(total));
         sb.append("=== Строк: %d\n".formatted(totalLines));
-        sb.append("=== Размер: %s\n".formatted(formatSize(totalSize)));
+        sb.append("=== Размер: %s\n".formatted(FileInfo.formatSize(totalSize)));
         sb.append(AppConfig.SEPARATOR).append("\n");
 
         log.info("Склейка завершена, результат: {} символов", sb.length());
         return sb.toString();
-    }
-
-    private String formatSize(long bytes) {
-        if (bytes < AppConfig.BYTES_IN_KB) {
-            return bytes + " B";
-        } else if (bytes < AppConfig.BYTES_IN_MB) {
-            return "%.1f KB".formatted(bytes / (double) AppConfig.BYTES_IN_KB);
-        } else {
-            return "%.1f MB".formatted(bytes / (double) AppConfig.BYTES_IN_MB);
-        }
     }
 }

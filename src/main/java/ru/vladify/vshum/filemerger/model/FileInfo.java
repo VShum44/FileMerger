@@ -2,6 +2,9 @@ package ru.vladify.vshum.filemerger.model;
 
 import java.io.File;
 
+import static ru.vladify.vshum.filemerger.config.AppConfig.BYTES_IN_KB;
+import static ru.vladify.vshum.filemerger.config.AppConfig.BYTES_IN_MB;
+
 /**
  * Обёртка над {@link File} с дополнительной информацией — количество строк и размер.
  */
@@ -39,6 +42,23 @@ public class FileInfo {
 
     public String getParent() {
         return file.getParent();
+    }
+
+    /**
+     * Возвращает размер файла в человекочитаемом формате.
+     *
+     * <p>Примеры: "512 B", "3.2 KB", "1.5 MB"</p>
+     *
+     * @return отформатированный размер
+     */
+    public static String formatSize(long bytes) {
+        if (bytes < BYTES_IN_KB) {
+            return bytes + " B";
+        } else if (bytes < BYTES_IN_MB) {
+            return "%.1f KB".formatted(bytes / (double) BYTES_IN_KB);
+        } else {
+            return "%.1f MB".formatted(bytes / (double) BYTES_IN_MB);
+        }
     }
 
     /**

@@ -2,7 +2,6 @@ package ru.vladify.vshum.filemerger.config;
 
 import ru.vladify.vshum.filemerger.model.FileInfo;
 
-import java.io.File;
 import java.util.Comparator;
 
 /**
