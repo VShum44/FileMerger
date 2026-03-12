@@ -48,7 +48,7 @@
 
         <Button text="Удалить" onAction="#onRemove" styleClass="button-danger">
             <tooltip>
-                <Tooltip text="Удалить выбранный (Delete)"/>
+                <Tooltip text="Удалить выбранные (Delete). Ctrl+Click — выбрать несколько"/>
             </tooltip>
         </Button>
 

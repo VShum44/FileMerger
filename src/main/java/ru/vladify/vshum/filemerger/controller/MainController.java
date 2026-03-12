@@ -5,10 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.*;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
@@ -30,6 +27,7 @@ import ru.vladify.vshum.filemerger.util.DialogHelper;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -75,6 +73,8 @@ public class MainController {
         // Настройка ComboBox сортировки
         sortComboBox.getItems().addAll(SortOrder.values());
         sortComboBox.setValue(SortOrder.NAME);
+
+        fileListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         Platform.runLater(this::setupHotkeys);
         updateStatus();
@@ -175,15 +175,15 @@ public class MainController {
     @FXML
     private void onRemove() {
         // Получаем что пользователь выделил
-        FileInfo selected = fileListView.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            log.debug("Удалён файл: {}", selected.getName());
-            files.remove(selected);
-            updateStatus();
-        }else {
-            log.debug("Попытка удаления без выделения");
+        List<FileInfo> selected = new ArrayList<>(fileListView.getSelectionModel().getSelectedItems());
+        if (selected.isEmpty()) {
+            log.debug("Попытка удаления файла без выделения");
             statusLabel.setText("Не выбрано ни одного элемента для удаления");
+            return;
         }
+        log.info("Удалено файлов: {}", selected.size());
+        files.removeAll(selected);
+        updateStatus();
     }
 
     private void updateStatus() {
@@ -269,6 +269,11 @@ public class MainController {
         scene.getAccelerators().put(
                 new KeyCodeCombination(KeyCode.DELETE),
                 this::onRemove
+        );
+
+        scene.getAccelerators().put(
+                new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN),
+                () -> fileListView.getSelectionModel().selectAll()
         );
     }
 

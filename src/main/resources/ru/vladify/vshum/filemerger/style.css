@@ -31,6 +31,12 @@
     -fx-text-fill: white;
 }
 
+/* Выбранная ячейка без фокуса — чуть бледнее */
+.list-cell:selected:unfocused {
+    -fx-background-color: #81C784;
+    -fx-text-fill: white;
+}
+
 /* ===== Кнопки ===== */
 .button {
     -fx-background-color: #4CAF50;
