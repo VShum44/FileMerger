@@ -46,6 +46,14 @@
             </tooltip>
         </Button>
 
+        <Button text="▲" onAction="#onMoveUp">
+            <tooltip><Tooltip text="Переместить вверх"/></tooltip>
+        </Button>
+
+        <Button text="▼" onAction="#onMoveDown">
+            <tooltip><Tooltip text="Переместить вниз"/></tooltip>
+        </Button>
+
         <Button text="Удалить" onAction="#onRemove" styleClass="button-danger">
             <tooltip>
                 <Tooltip text="Удалить выбранные (Delete). Ctrl+Click — выбрать несколько"/>

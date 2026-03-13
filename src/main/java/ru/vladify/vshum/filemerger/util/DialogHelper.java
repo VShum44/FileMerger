@@ -1,6 +1,9 @@
 package ru.vladify.vshum.filemerger.util;
 
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+
+import java.util.Optional;
 
 /**
  * Утилита для показа диалоговых окон.
@@ -49,6 +52,21 @@ public class DialogHelper {
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    /**
+     * Показывает диалог подтверждения с кнопками OK и Отмена.
+     *
+     * @param title   заголовок окна
+     * @param content текст вопроса
+     * @return true если пользователь нажал OK
+     */
+    public static boolean askConfirmation(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        return alert.showAndWait().filter(b -> b == ButtonType.OK).isPresent();
     }
 
     private DialogHelper() {}

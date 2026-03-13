@@ -3,6 +3,7 @@ package ru.vladify.vshum.filemerger.controller;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -72,7 +73,7 @@ public class MainController {
 
         // Настройка ComboBox сортировки
         sortComboBox.getItems().addAll(SortOrder.values());
-        sortComboBox.setValue(SortOrder.NAME);
+        sortComboBox.setValue(SortOrder.MANUAL);
 
         fileListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
@@ -82,6 +83,10 @@ public class MainController {
         log.debug("Контроллер инициализирован, горячие клавиши настроены");
     }
 
+    /**
+     * Открывает диалог выбора файлов и добавляет их в список.
+     * Дубликаты (по пути) игнорируются.
+     */
     @FXML
     private void onAddFiles() {
         log.debug("Открытие диалога добавления файлов");
@@ -92,7 +97,8 @@ public class MainController {
                 new FileChooser.ExtensionFilter(
                         "Исходный код",
                         "*.java", "*.gradle", "*.xml", "*.kt",
-                        "*.json", "*.yaml", "*.yml", "*.properties", "*.txt"
+                        "*.json", "*.yaml", "*.yml", "*.properties",
+                        "*.txt", "*.html", "*.js"
                 ),
                 new FileChooser.ExtensionFilter("Все файлы", "*.*")
         );
@@ -113,13 +119,25 @@ public class MainController {
         }
     }
 
+    /**
+     * Очищает список файлов.
+     * Запрашивает подтверждение если список не пуст.
+     */
     @FXML
     private void onClear() {
+        if(files.size() > 0) {
+            boolean isDelete = DialogHelper.askConfirmation("Удалить все файлы", "Добавлено %d файлов. Удалить их все?".formatted(files.size()));
+            if(!isDelete){return;}
+        }
         log.info("Список очищен ({} файлов удалено)", files.size());
         files.clear();
         updateStatus();
     }
 
+    /**
+     * Склеивает все файлы из списка и сохраняет результат.
+     * Показывает предупреждение если список пуст.
+     */
     @FXML
     private void onMerge() {
         log.info("Начинаю склейку {} файлов", files.size());
@@ -172,6 +190,10 @@ public class MainController {
         statusLabel.setText("Сохранено: " + outputFile.getName());
     }
 
+    /**
+     * Удаляет выделенные файлы из списка.
+     * При множественном выделении (2+) запрашивает подтверждение.
+     */
     @FXML
     private void onRemove() {
         // Получаем что пользователь выделил
@@ -181,11 +203,20 @@ public class MainController {
             statusLabel.setText("Не выбрано ни одного элемента для удаления");
             return;
         }
+        if(selected.size() > 1){
+            boolean isDelete = DialogHelper.askConfirmation("Удалить добавленные файлы",
+                    "Выбрано %d файл(а/ов). Удалить?".formatted(selected.size()));
+            if (!isDelete) {return;}
+        }
         log.info("Удалено файлов: {}", selected.size());
         files.removeAll(selected);
         updateStatus();
     }
 
+    /**
+     * Обновляет статусную строку и заголовок окна —
+     * количество файлов, строк и общий размер.
+     */
     private void updateStatus() {
         long totalLines = files.stream().mapToLong(FileInfo::getLineCount).sum();
         long totalSize = files.stream().mapToLong(FileInfo::getSize).sum();
@@ -253,6 +284,11 @@ public class MainController {
         fileListView.getStyleClass().remove("drag-over");
     }
 
+    /**
+     * Настраивает горячие клавиши:
+     * Ctrl+O — добавить, Ctrl+S — склеить,
+     * Delete — удалить, Ctrl+A — выделить все.
+     */
     private void setupHotkeys() {
         Scene scene = fileListView.getScene();
 
@@ -275,6 +311,16 @@ public class MainController {
                 new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN),
                 () -> fileListView.getSelectionModel().selectAll()
         );
+
+        scene.getAccelerators().put(
+                new KeyCodeCombination(KeyCode.UP, KeyCombination.ALT_DOWN),
+                this::onMoveUp
+        );
+
+        scene.getAccelerators().put(
+                new KeyCodeCombination(KeyCode.DOWN, KeyCombination.ALT_DOWN),
+                this::onMoveDown
+        );
     }
 
     @FXML
@@ -285,8 +331,44 @@ public class MainController {
 
     private void applySort() {
         SortOrder selected = sortComboBox.getValue();
-        if (selected != null && !files.isEmpty()) {
+        if (selected != null && !files.isEmpty() && selected.getComparator() != null) {
             FXCollections.sort(files, selected.getComparator());
         }
+    }
+
+    /**
+     * Проверяет, пуст ли список файлов.
+     * Используется для подтверждения при закрытии приложения.
+     *
+     * @return true если список пуст
+     */
+    public boolean isFilesEmpty() {
+        return files.isEmpty();
+    }
+
+    @FXML
+    private void onMoveUp() {
+        int selectedIndex = fileListView.getSelectionModel().getSelectedIndex();
+        if(selectedIndex <= 0) return;
+
+        FileInfo info = files.remove(selectedIndex);
+        files.add(selectedIndex - 1, info);
+        fileListView.getSelectionModel().clearSelection();
+        fileListView.getSelectionModel().select(selectedIndex - 1);
+
+        if(!sortComboBox.getValue().isManual()) {sortComboBox.setValue(SortOrder.MANUAL);}
+    }
+
+    @FXML
+    private void onMoveDown() {
+        int selectedIndex = fileListView.getSelectionModel().getSelectedIndex();
+        if(selectedIndex < 0 || selectedIndex >= files.size() - 1) return;
+
+        FileInfo info = files.remove(selectedIndex);
+        files.add(selectedIndex + 1, info);
+        fileListView.getSelectionModel().clearSelection();
+        fileListView.getSelectionModel().select(selectedIndex + 1);
+
+        if(!sortComboBox.getValue().isManual()) {sortComboBox.setValue(SortOrder.MANUAL);}
     }
 }

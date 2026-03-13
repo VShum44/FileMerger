@@ -9,6 +9,7 @@ import java.util.Comparator;
  * Каждый элемент содержит название для UI и компаратор.
  */
 public enum SortOrder {
+    MANUAL("Ручная", null),
     NAME("По имени",
             Comparator.comparing(FileInfo::getName, String.CASE_INSENSITIVE_ORDER)),
     EXTENSION("По расширению",
@@ -37,6 +38,10 @@ public enum SortOrder {
 
     public Comparator<FileInfo> getComparator() {
         return comparator;
+    }
+
+    public boolean isManual(){
+        return this == MANUAL;
     }
 
     @Override

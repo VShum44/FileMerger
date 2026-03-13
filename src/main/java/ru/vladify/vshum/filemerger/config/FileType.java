@@ -15,7 +15,9 @@ public enum FileType {
     PROPERTIES(".properties", "Properties"),
     TEXT(".txt", "Text File"),
     FXML(".fxml", "FXML Layout"),
-    CSS(".css", "CSS Stylesheet");
+    CSS(".css", "CSS Stylesheet"),
+    HTML(".html", "HTML Layout"),
+    JAVA_SCRIPT(".js", "JAVA SCRIPT Source");
 
     private final String extension;
     private final String description;
