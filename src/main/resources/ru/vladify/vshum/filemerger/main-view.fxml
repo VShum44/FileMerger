@@ -12,6 +12,7 @@
 <?import javafx.scene.control.Tooltip?>
 
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TextField?>
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="ru.vladify.vshum.filemerger.controller.MainController"
       spacing="10"
@@ -24,19 +25,24 @@
 
     <!-- 1. Заголовок -->
     <Label text="File Merger v1.0" styleClass="title-label"/>
-<!-- TODO: добавить выбор папки добавления файлов и сохранения по умолчанию, настройку расширения из UI -->
 
-    <!-- 2. Место для списка файлов -->
-    <ListView fx:id="fileListView"
-              VBox.vgrow="ALWAYS"
-              onDragOver="#onDragOver"
-              onDragDropped="#onDragDropped"
-              onDragEntered="#onDragEntered"
-              onDragExited="#onDragExited">
-        <placeholder>
-            <Label text="Перетащите файлы сюда или нажмите 'Добавить'"/>
-        </placeholder>
-    </ListView>
+    <!-- TODO: добавить выбор папки добавления файлов и сохранения по умолчанию, настройку расширения из UI -->
+
+    <VBox spacing="8">
+        <TextField fx:id="searchField" promptText="Поиск по названию..."/>
+        <!-- 2. Место для списка файлов -->
+        <ListView fx:id="fileListView"
+                  VBox.vgrow="ALWAYS"
+                  onDragOver="#onDragOver"
+                  onDragDropped="#onDragDropped"
+                  onDragEntered="#onDragEntered"
+                  onDragExited="#onDragExited">
+            <placeholder>
+                <Label text="Перетащите файлы сюда или нажмите 'Добавить'"/>
+            </placeholder>
+        </ListView>
+    </VBox>
+
 
     <!-- 3. Кнопки -->
     <HBox spacing="8">
@@ -47,11 +53,15 @@
         </Button>
 
         <Button text="▲" onAction="#onMoveUp">
-            <tooltip><Tooltip text="Переместить вверх"/></tooltip>
+            <tooltip>
+                <Tooltip text="Переместить вверх"/>
+            </tooltip>
         </Button>
 
         <Button text="▼" onAction="#onMoveDown">
-            <tooltip><Tooltip text="Переместить вниз"/></tooltip>
+            <tooltip>
+                <Tooltip text="Переместить вниз"/>
+            </tooltip>
         </Button>
 
         <Button text="Удалить" onAction="#onRemove" styleClass="button-danger">
@@ -73,7 +83,9 @@
         </Button>
 
         <ComboBox fx:id="sortComboBox" onAction="#onSortChanged">
-            <tooltip><Tooltip text="Сортировка списка"/></tooltip>
+            <tooltip>
+                <Tooltip text="Сортировка списка"/>
+            </tooltip>
         </ComboBox>
     </HBox>
 

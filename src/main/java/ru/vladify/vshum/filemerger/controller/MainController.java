@@ -3,16 +3,11 @@ package ru.vladify.vshum.filemerger.controller;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.TransferMode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyCode;
+import javafx.scene.input.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
@@ -24,6 +19,7 @@ import ru.vladify.vshum.filemerger.service.FileMergerService;
 import ru.vladify.vshum.filemerger.service.FileService;
 import ru.vladify.vshum.filemerger.service.MergeService;
 import ru.vladify.vshum.filemerger.util.DialogHelper;
+import ru.vladify.vshum.filemerger.util.FileInfoCell;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,42 +35,52 @@ public class MainController {
 
     private static final Logger log = LoggerFactory.getLogger(MainController.class);
 
-    @FXML private Label statusLabel;
-    @FXML private ListView<FileInfo> fileListView;
-    @FXML private ComboBox<SortOrder> sortComboBox;
+    @FXML
+    private TextField searchField;
+    @FXML
+    private Label statusLabel;
+    @FXML
+    private ListView<FileInfo> fileListView;
+    @FXML
+    private ComboBox<SortOrder> sortComboBox;
 
     private final ObservableList<FileInfo> files = FXCollections.observableArrayList();
+    private final FilteredList<FileInfo> filteredFiles = new FilteredList<>(files, f -> true);
 
     private final MergeService fileMergerService = new FileMergerService();
     private final FileService fileService = new FileService();
 
+    /**
+     * Инициализация контроллера — настройка ListView, фильтрации,
+     * сортировки, множественного выделения и горячих клавиш.
+     */
     @FXML
     public void initialize() {
         log.info("Инициализация контроллера");
         // Привязываем список к ListView — ОДИН раз при старте
-        fileListView.setItems(files);
-        fileListView.setCellFactory(param -> new ListCell<>(){
-            @Override
-            protected void updateItem(FileInfo info, boolean empty) {
-                super.updateItem(info, empty);
-                if (empty || info == null) {
-                    setText(null);
-                } else {
-                    setText("%s  [%d строк · %s]  (%s) ".formatted(
-                            info.getName(),
-                            info.getLineCount(),
-                            FileInfo.formatSize(info.getSize()),
-                            info.getParent()
-
-                    ));
-                }
-            }
-        });
+        fileListView.setItems(filteredFiles);
+        fileListView.setCellFactory(param -> new FileInfoCell());
 
         // Настройка ComboBox сортировки
         sortComboBox.getItems().addAll(SortOrder.values());
         sortComboBox.setValue(SortOrder.MANUAL);
 
+        // Настройка поискового поля
+        // Слушаем изменения текста:
+        searchField.textProperty().addListener((obs, old, newValue) -> {
+                    filteredFiles.setPredicate(fileInfo -> {
+                        // Пустой поиск — показать всё
+                        if (newValue == null || newValue.isEmpty()) {
+                            return true;
+                        }
+                        // Сравниваем в нижнем регистре (регистронезависимый поиск)
+                        String lowerCaseFilter = newValue.toLowerCase();
+                        return fileInfo.getName().toLowerCase().contains(lowerCaseFilter);
+                    });
+                    updateStatus();
+                }
+
+        );
         fileListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         Platform.runLater(this::setupHotkeys);
@@ -125,9 +131,11 @@ public class MainController {
      */
     @FXML
     private void onClear() {
-        if(files.size() > 0) {
+        if (files.size() > 0) {
             boolean isDelete = DialogHelper.askConfirmation("Удалить все файлы", "Добавлено %d файлов. Удалить их все?".formatted(files.size()));
-            if(!isDelete){return;}
+            if (!isDelete) {
+                return;
+            }
         }
         log.info("Список очищен ({} файлов удалено)", files.size());
         files.clear();
@@ -203,10 +211,12 @@ public class MainController {
             statusLabel.setText("Не выбрано ни одного элемента для удаления");
             return;
         }
-        if(selected.size() > 1){
+        if (selected.size() > 1) {
             boolean isDelete = DialogHelper.askConfirmation("Удалить добавленные файлы",
                     "Выбрано %d файл(а/ов). Удалить?".formatted(selected.size()));
-            if (!isDelete) {return;}
+            if (!isDelete) {
+                return;
+            }
         }
         log.info("Удалено файлов: {}", selected.size());
         files.removeAll(selected);
@@ -219,13 +229,24 @@ public class MainController {
      */
     private void updateStatus() {
         long totalLines = files.stream().mapToLong(FileInfo::getLineCount).sum();
+        // видимых после фильтрации
+        long shownLines = filteredFiles.stream().mapToLong(FileInfo::getLineCount).sum();
         long totalSize = files.stream().mapToLong(FileInfo::getSize).sum();
+        // видимых после фильтрации
+        long shownSize = filteredFiles.stream().mapToLong(FileInfo::getSize).sum();
 
-        String formattedSize = FileInfo.formatSize(totalSize);
+        String formattedSize;
+        String statusLabelText;
+        if(totalSize == shownSize){
+            formattedSize = FileInfo.formatSize(totalSize);
+            statusLabelText = "Файлов: %d | Строк: %d | Размер: %s".formatted(files.size(), totalLines, formattedSize);
+        }
+        else {
+            formattedSize = FileInfo.formatSize(shownSize);
+            statusLabelText = "Файлов: %d | Строк: %d | Размер: %s".formatted(filteredFiles.size(), shownLines, formattedSize);
+        }
 
-        statusLabel.setText("Файлов: %d | Строк: %d | Размер: %s".formatted(
-                files.size(), totalLines, formattedSize
-        ));
+        statusLabel.setText(statusLabelText);
 
         if (fileListView.getScene() != null) {
             Stage stage = (Stage) fileListView.getScene().getWindow();
@@ -242,7 +263,7 @@ public class MainController {
 
     @FXML
     private void onDragOver(DragEvent event) {
-        if (event.getDragboard().hasFiles()){
+        if (event.getDragboard().hasFiles()) {
             event.acceptTransferModes(TransferMode.COPY);
         }
         event.consume();
@@ -258,7 +279,7 @@ public class MainController {
             for (File file : db.getFiles()) {
                 List<FileInfo> collected = fileService.collectFiles(file);
                 for (FileInfo fi : collected) {
-                    if(!files.contains(fi)){
+                    if (!files.contains(fi)) {
                         files.add(fi);
                     }
                 }
@@ -346,29 +367,43 @@ public class MainController {
         return files.isEmpty();
     }
 
+    /**
+     * Перемещает выделенный файл на одну позицию вверх.
+     * Если выделен первый элемент или ничего не выделено — игнорирует.
+     * При ручном перемещении переключает сортировку на MANUAL.
+     */
     @FXML
     private void onMoveUp() {
         int selectedIndex = fileListView.getSelectionModel().getSelectedIndex();
-        if(selectedIndex <= 0) return;
+        if (selectedIndex <= 0) return;
 
         FileInfo info = files.remove(selectedIndex);
         files.add(selectedIndex - 1, info);
         fileListView.getSelectionModel().clearSelection();
         fileListView.getSelectionModel().select(selectedIndex - 1);
 
-        if(!sortComboBox.getValue().isManual()) {sortComboBox.setValue(SortOrder.MANUAL);}
+        if (!sortComboBox.getValue().isManual()) {
+            sortComboBox.setValue(SortOrder.MANUAL);
+        }
     }
 
+    /**
+     * Перемещает выделенный файл на одну позицию вниз.
+     * Если выделен последний элемент или ничего не выделено — игнорирует.
+     * При ручном перемещении переключает сортировку на MANUAL.
+     */
     @FXML
     private void onMoveDown() {
         int selectedIndex = fileListView.getSelectionModel().getSelectedIndex();
-        if(selectedIndex < 0 || selectedIndex >= files.size() - 1) return;
+        if (selectedIndex < 0 || selectedIndex >= files.size() - 1) return;
 
         FileInfo info = files.remove(selectedIndex);
         files.add(selectedIndex + 1, info);
         fileListView.getSelectionModel().clearSelection();
         fileListView.getSelectionModel().select(selectedIndex + 1);
 
-        if(!sortComboBox.getValue().isManual()) {sortComboBox.setValue(SortOrder.MANUAL);}
+        if (!sortComboBox.getValue().isManual()) {
+            sortComboBox.setValue(SortOrder.MANUAL);
+        }
     }
 }

@@ -40,7 +40,12 @@ public enum SortOrder {
         return comparator;
     }
 
-    public boolean isManual(){
+    /**
+     * Проверяет, является ли данный режим ручной сортировкой.
+     *
+     * @return true если сортировка ручная (без компаратора)
+     */
+    public boolean isManual() {
         return this == MANUAL;
     }
 
