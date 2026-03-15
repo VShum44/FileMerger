@@ -1,5 +1,6 @@
 package ru.vladify.vshum.filemerger.controller;
 
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -7,9 +8,13 @@ import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
 import javafx.scene.input.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.vladify.vshum.filemerger.config.AppConfig;
@@ -21,6 +26,7 @@ import ru.vladify.vshum.filemerger.service.MergeService;
 import ru.vladify.vshum.filemerger.util.DialogHelper;
 import ru.vladify.vshum.filemerger.util.FileInfoCell;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -81,9 +87,12 @@ public class MainController {
                 }
 
         );
+
         fileListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         Platform.runLater(this::setupHotkeys);
+        Platform.runLater(this::setupContextMenu);
+
         updateStatus();
 
         log.debug("Контроллер инициализирован, горячие клавиши настроены");
@@ -344,6 +353,60 @@ public class MainController {
         );
     }
 
+    /**
+     * Настраивает контекстное меню для ListView:
+     * открыть в проводнике, копировать путь,
+     * переместить вверх/вниз, удалить.
+     */
+    private void setupContextMenu() {
+        ContextMenu menu = new ContextMenu();
+
+        MenuItem openInExplorer = new MenuItem("Открыть в проводнике");
+        openInExplorer.setOnAction(e -> {
+            new Thread(() -> {
+                FileInfo selected = fileListView.getSelectionModel().getSelectedItem();
+                if (selected == null) {return;}
+                try {
+                    Desktop.getDesktop().open(selected.getFile().getParentFile());
+                } catch (IOException ex) {
+                    log.error("Ошибка открытия файла в папке");
+                    Platform.runLater(() -> DialogHelper.showError("", "Ошибка открытия файла", "Не удалось открыть файл в папке"));
+                }
+            }).start();
+        });
+
+        MenuItem clipboardItem = new MenuItem("Копировать путь");
+        clipboardItem.setOnAction(e -> {
+            FileInfo selected = fileListView.getSelectionModel().getSelectedItem();
+            if (selected == null) {return;}
+            ClipboardContent content = new ClipboardContent();
+            content.putString(selected.getAbsolutePath());
+            Clipboard.getSystemClipboard().setContent(content);
+            showTemporaryStatus("Путь скопирован: " + selected.getAbsolutePath());
+        });
+
+        MenuItem moveUp = new MenuItem("Переместить вверх");
+        moveUp.setOnAction(e -> onMoveUp());
+
+        MenuItem moveDown = new MenuItem("Переместить вниз");
+        moveDown.setOnAction(e -> onMoveDown());
+
+        MenuItem deleteItem = new MenuItem("Удалить");
+        deleteItem.setOnAction(e -> onRemove());
+
+        menu.getItems().addAll(
+                openInExplorer,
+                clipboardItem,
+                new SeparatorMenuItem(),
+                moveUp,
+                moveDown,
+                new SeparatorMenuItem(),
+                deleteItem
+        );
+
+        fileListView.setContextMenu(menu);
+    }
+
     @FXML
     private void onSortChanged() {
         applySort();
@@ -355,6 +418,19 @@ public class MainController {
         if (selected != null && !files.isEmpty() && selected.getComparator() != null) {
             FXCollections.sort(files, selected.getComparator());
         }
+    }
+    /**
+     * Показывает временное сообщение в статусной строке.
+     * Через 2 секунды автоматически восстанавливает стандартный статус.
+     *
+     * @param message текст временного сообщения
+     */
+    private void showTemporaryStatus(String message) {
+        statusLabel.setText(message);
+
+        PauseTransition pause = new PauseTransition(Duration.seconds(2));
+        pause.setOnFinished(e -> updateStatus());
+        pause.play();
     }
 
     /**
