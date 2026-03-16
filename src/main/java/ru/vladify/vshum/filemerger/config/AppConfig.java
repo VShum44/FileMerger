@@ -19,7 +19,7 @@ public class AppConfig {
     public static final long BYTES_IN_KB = 1024;
     public static final long BYTES_IN_MB = 1024 * 1024;
 
-    public static final int MAX_FILES_LIMIT = 500;
+    public static final int MAX_FILES_LIMIT = 5000;
 
     // Приватный конструктор — нельзя создать экземпляр
     private AppConfig() {}

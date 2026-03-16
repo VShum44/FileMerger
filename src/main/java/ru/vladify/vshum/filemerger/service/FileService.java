@@ -28,8 +28,9 @@ public class FileService {
         long lines = 0;
         try {
             lines = Files.lines(file.toPath()).count();
-        } catch (IOException e) {
-            log.warn("Не удалось подсчитать строки: {}", file.getName(), e);
+        } catch (Exception e) {
+            // Бинарный файл или проблема с кодировкой — пропускаем подсчёт
+            log.debug("Не удалось подсчитать строки (возможно бинарный файл): {} {}", file.getName(), file.getAbsolutePath());
         }
         return new FileInfo(file, lines, file.length());
     }
