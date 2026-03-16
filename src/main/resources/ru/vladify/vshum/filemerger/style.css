@@ -107,3 +107,12 @@
 .combo-box:hover {
     -fx-border-color: #4CAF50;
 }
+
+#progressBar {
+    -fx-accent: #2196F3;
+    -fx-control-inner-background: #e0e0e0;
+}
+
+#progressBar:visible {
+    -fx-padding: 4;
+}

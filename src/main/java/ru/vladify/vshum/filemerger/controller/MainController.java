@@ -6,6 +6,7 @@ import javafx.beans.binding.StringBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -42,6 +43,7 @@ import java.util.List;
 public class MainController {
 
     private static final Logger log = LoggerFactory.getLogger(MainController.class);
+    public ProgressBar progressBar;
 
     @FXML
     private Button removeButton;
@@ -261,6 +263,7 @@ public class MainController {
             statusLabelText = "Файлов: %d | Строк: %d | Размер: %s".formatted(filteredFiles.size(), shownLines, formattedSize);
         }
 
+//        statusLabel.textProperty().unbind();
         statusLabel.setText(statusLabelText);
 
         if (fileListView.getScene() != null) {
@@ -287,20 +290,98 @@ public class MainController {
     @FXML
     private void onDragDropped(DragEvent event) {
         Dragboard db = event.getDragboard();
-        boolean success = false;
 
         try {
             if (db.hasFiles()) {
                 log.info("Drag & Drop: получено {} элементов", db.getFiles().size());
 
-                int addedCount = 0;
-                int skippedCount = 0;
+                // Создаём Task для загрузки файлов в фоне
+                Task<LoadResult> loadFilesTask = createLoadFilesTask(db.getFiles());
 
-                for (File file : db.getFiles()) {
+                // Когда Task завершится успешно
+                loadFilesTask.setOnSucceeded(e -> {
+                    LoadResult result = loadFilesTask.getValue();
+
+                    // Добавляем файлы в UI-поток
+                    Platform.runLater(() -> {
+                        files.addAll(result.loadedFiles);
+                        applySort();
+                        updateStatus();
+                        progressBar.setVisible(false);
+
+                        // Показываем уведомления
+                        if (result.skippedCount > 0) {
+                            DialogHelper.showWarning("Внимание",
+                                    "Пропущено %d ярлык(ов). Перетащите саму папку.".formatted(result.skippedCount));
+                        }
+
+                        if (result.errorCount > 0) {
+                            DialogHelper.showWarning("Ошибка при обработке",
+                                    "Не удалось обработать %d файл(ов).".formatted(result.errorCount));
+                        }
+
+                        if (files.size() >= AppConfig.MAX_FILES_LIMIT) {
+                            DialogHelper.showWarning("Лимит",
+                                    "Достигнут максимум %d файлов.".formatted(AppConfig.MAX_FILES_LIMIT));
+                        }
+
+                        if (result.addedCount > 0) {
+                            log.info("Успешно добавлено: {} файлов", result.addedCount);
+                        }
+                    });
+                });
+
+                // Если ошибка
+                loadFilesTask.setOnFailed(e -> {
+                    Throwable exception = loadFilesTask.getException();
+                    log.error("Критическая ошибка при загрузке файлов", exception);
+
+                    Platform.runLater(() -> {
+                        progressBar.setVisible(false);
+                        DialogHelper.showError("Ошибка", "Ошибка при добавлении файлов",
+                                exception.getMessage() != null ? exception.getMessage() : "Неизвестная ошибка");
+                    });
+                });
+
+                // Привязываем прогресс к UI
+                progressBar.setVisible(true);
+                progressBar.progressProperty().bind(loadFilesTask.progressProperty());
+                loadFilesTask.messageProperty().addListener((obs, old, newValue) -> {
+                    Platform.runLater(() -> statusLabel.setText(newValue));
+                });
+
+                // Запускаем Task в отдельном потоке
+                new Thread(loadFilesTask).start();
+            }
+        } finally {
+            // Страховка — убираем стиль в любом случае
+            fileListView.getStyleClass().removeAll("drag-over");
+        }
+
+        event.setDropCompleted(true);
+        event.consume();
+    }
+
+    /**
+     * Создаёт Task для загрузки файлов в фоновом потоке.
+     *
+     * @param filesToLoad список файлов для загрузки
+     * @return Task с результатом загрузки
+     */
+    private Task<LoadResult> createLoadFilesTask(List<File> filesToLoad) {
+        return new Task<LoadResult>() {
+            @Override
+            protected LoadResult call() throws Exception {
+                LoadResult result = new LoadResult();
+                int totalFiles = filesToLoad.size();
+
+                for (int i = 0; i < totalFiles; i++) {
+                    File file = filesToLoad.get(i);
+
                     // Проверка 1: ярлыки
                     if (file.getName().endsWith(".lnk")) {
                         log.warn("Ярлык проигнорирован: {}", file.getName());
-                        skippedCount++;
+                        result.skippedCount++;
                         continue;
                     }
 
@@ -311,13 +392,14 @@ public class MainController {
                     }
 
                     try {
+                        updateMessage("Обработка: " + file.getName());
                         List<FileInfo> collected = fileService.collectFiles(file);
 
                         for (FileInfo fi : collected) {
                             // Проверка 3: дубликаты
                             if (!files.contains(fi)) {
-                                files.add(fi);
-                                addedCount++;
+                                result.loadedFiles.add(fi);
+                                result.addedCount++;
                             }
 
                             // Проверка 4: лимит во время сбора
@@ -328,38 +410,26 @@ public class MainController {
                         }
                     } catch (Exception e) {
                         log.error("Ошибка при обработке: {}", file.getAbsolutePath(), e);
+                        result.errorCount++;
                     }
+
+                    // Обновляем прогресс
+                    updateProgress(i + 1, totalFiles);
                 }
 
-                // Уведомления
-                if (skippedCount > 0) {
-                    DialogHelper.showWarning("Внимание",
-                            "Пропущено %d ярлык(ов). Перетащите саму папку.".formatted(skippedCount));
-                }
-
-                if (files.size() >= AppConfig.MAX_FILES_LIMIT) {
-                    DialogHelper.showWarning("Лимит",
-                            "Достигнут максимум %d файлов.".formatted(AppConfig.MAX_FILES_LIMIT));
-                }
-
-                if (addedCount > 0) {
-                    success = true;
-                    applySort();
-                    updateStatus();
-                    log.info("Успешно добавлено: {} файлов", addedCount);
-                }
+                return result;
             }
-        } catch (Exception e) {
-            log.error("Критическая ошибка при drag & drop", e);
-            DialogHelper.showError("Ошибка", "Ошибка при добавлении файлов",
-                    e.getMessage() != null ? e.getMessage() : "Неизвестная ошибка");
-        } finally {
-            // Страховка — убираем стиль в любом случае
-            fileListView.getStyleClass().removeAll("drag-over");
-        }
+        };
+    }
 
-        event.setDropCompleted(success);
-        event.consume();
+    /**
+     * Вспомогательный класс для передачи результатов загрузки.
+     */
+    private static class LoadResult {
+        List<FileInfo> loadedFiles = new ArrayList<>();
+        int addedCount = 0;
+        int skippedCount = 0;
+        int errorCount = 0;
     }
 
     @FXML
