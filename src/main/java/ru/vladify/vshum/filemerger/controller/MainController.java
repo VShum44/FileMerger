@@ -288,35 +288,74 @@ public class MainController {
     private void onDragDropped(DragEvent event) {
         Dragboard db = event.getDragboard();
         boolean success = false;
-        int skippedCount = 0;
 
-        fileListView.getStyleClass().removeAll("drag-over");
+        try {
+            if (db.hasFiles()) {
+                log.info("Drag & Drop: получено {} элементов", db.getFiles().size());
 
-        if (db.hasFiles()) {
-            log.info("Drag & Drop: получено {} элементов", db.getFiles().size());
-            for (File file : db.getFiles()) {
-                // Проверяем ярлыки
-                if (file.getName().endsWith(".lnk")) {
-                    log.warn("Ярлык проигнорирован: {}", file.getName());
-                    skippedCount++;
-                    continue;
-                }
-                List<FileInfo> collected = fileService.collectFiles(file);
-                for (FileInfo fi : collected) {
-                    if (!files.contains(fi)) {
-                        files.add(fi);
+                int addedCount = 0;
+                int skippedCount = 0;
+
+                for (File file : db.getFiles()) {
+                    // Проверка 1: ярлыки
+                    if (file.getName().endsWith(".lnk")) {
+                        log.warn("Ярлык проигнорирован: {}", file.getName());
+                        skippedCount++;
+                        continue;
+                    }
+
+                    // Проверка 2: лимит перед сбором
+                    if (files.size() >= AppConfig.MAX_FILES_LIMIT) {
+                        log.warn("Лимит файлов достигнут");
+                        break;
+                    }
+
+                    try {
+                        List<FileInfo> collected = fileService.collectFiles(file);
+
+                        for (FileInfo fi : collected) {
+                            // Проверка 3: дубликаты
+                            if (!files.contains(fi)) {
+                                files.add(fi);
+                                addedCount++;
+                            }
+
+                            // Проверка 4: лимит во время сбора
+                            if (files.size() >= AppConfig.MAX_FILES_LIMIT) {
+                                log.warn("Лимит достигнут во время сбора");
+                                break;
+                            }
+                        }
+                    } catch (Exception e) {
+                        log.error("Ошибка при обработке: {}", file.getAbsolutePath(), e);
                     }
                 }
-            }
 
-            if (skippedCount > 0) {
-                DialogHelper.showWarning("Внимание",
-                        "Пропущено %d ярлык(ов). Перетащите саму папку, не ярлык.".formatted(skippedCount));
-            }
+                // Уведомления
+                if (skippedCount > 0) {
+                    DialogHelper.showWarning("Внимание",
+                            "Пропущено %d ярлык(ов). Перетащите саму папку.".formatted(skippedCount));
+                }
 
-            success = true;
-            applySort();
-            updateStatus();
+                if (files.size() >= AppConfig.MAX_FILES_LIMIT) {
+                    DialogHelper.showWarning("Лимит",
+                            "Достигнут максимум %d файлов.".formatted(AppConfig.MAX_FILES_LIMIT));
+                }
+
+                if (addedCount > 0) {
+                    success = true;
+                    applySort();
+                    updateStatus();
+                    log.info("Успешно добавлено: {} файлов", addedCount);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Критическая ошибка при drag & drop", e);
+            DialogHelper.showError("Ошибка", "Ошибка при добавлении файлов",
+                    e.getMessage() != null ? e.getMessage() : "Неизвестная ошибка");
+        } finally {
+            // Страховка — убираем стиль в любом случае
+            fileListView.getStyleClass().removeAll("drag-over");
         }
 
         event.setDropCompleted(success);
@@ -434,6 +473,19 @@ public class MainController {
         fileListView.setContextMenu(menu);
     }
 
+    /**
+     * Настраивает привязки (binding) текста кнопок к данным списка.
+     *
+     * Кнопка "Склеить" показывает количество файлов для склейки:
+     * - Пусто → "Склеить"
+     * - Есть файлы → "Склеить (5)"
+     *
+     * Кнопка "Удалить" показывает количество выделенных файлов:
+     * - Ничего не выделено → "Удалить"
+     * - Выделено → "Удалить (3)"
+     *
+     * Привязки обновляются автоматически при изменении списка или выделения.
+     */
     private void setupBindings() {
 
         StringBinding filesCountToMerge = new StringBinding() {
