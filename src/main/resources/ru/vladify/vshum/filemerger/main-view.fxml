@@ -64,7 +64,7 @@
             </tooltip>
         </Button>
 
-        <Button text="Удалить" onAction="#onRemove" styleClass="button-danger">
+        <Button fx:id="removeButton" text="Удалить" onAction="#onRemove" styleClass="button-danger">
             <tooltip>
                 <Tooltip text="Удалить выбранные (Delete). Ctrl+Click — выбрать несколько"/>
             </tooltip>
@@ -76,7 +76,7 @@
             </tooltip>
         </Button>
 
-        <Button text="Склеить" onAction="#onMerge" styleClass="button-primary">
+        <Button fx:id="mergeButton" text="Склеить" onAction="#onMerge" styleClass="button-primary">
             <tooltip>
                 <Tooltip text="Склеить и сохранить (Ctrl+S)"/>
             </tooltip>

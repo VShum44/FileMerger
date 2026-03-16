@@ -2,12 +2,14 @@ package ru.vladify.vshum.filemerger.controller;
 
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
+import javafx.beans.binding.StringBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
@@ -41,6 +43,10 @@ public class MainController {
 
     private static final Logger log = LoggerFactory.getLogger(MainController.class);
 
+    @FXML
+    private Button removeButton;
+    @FXML
+    private Button mergeButton;
     @FXML
     private TextField searchField;
     @FXML
@@ -92,6 +98,7 @@ public class MainController {
 
         Platform.runLater(this::setupHotkeys);
         Platform.runLater(this::setupContextMenu);
+        Platform.runLater(this::setupBindings);
 
         updateStatus();
 
@@ -246,11 +253,10 @@ public class MainController {
 
         String formattedSize;
         String statusLabelText;
-        if(totalSize == shownSize){
+        if (totalSize == shownSize) {
             formattedSize = FileInfo.formatSize(totalSize);
             statusLabelText = "Файлов: %d | Строк: %d | Размер: %s".formatted(files.size(), totalLines, formattedSize);
-        }
-        else {
+        } else {
             formattedSize = FileInfo.formatSize(shownSize);
             statusLabelText = "Файлов: %d | Строк: %d | Размер: %s".formatted(filteredFiles.size(), shownLines, formattedSize);
         }
@@ -282,10 +288,19 @@ public class MainController {
     private void onDragDropped(DragEvent event) {
         Dragboard db = event.getDragboard();
         boolean success = false;
+        int skippedCount = 0;
+
+        fileListView.getStyleClass().removeAll("drag-over");
 
         if (db.hasFiles()) {
             log.info("Drag & Drop: получено {} элементов", db.getFiles().size());
             for (File file : db.getFiles()) {
+                // Проверяем ярлыки
+                if (file.getName().endsWith(".lnk")) {
+                    log.warn("Ярлык проигнорирован: {}", file.getName());
+                    skippedCount++;
+                    continue;
+                }
                 List<FileInfo> collected = fileService.collectFiles(file);
                 for (FileInfo fi : collected) {
                     if (!files.contains(fi)) {
@@ -293,6 +308,12 @@ public class MainController {
                     }
                 }
             }
+
+            if (skippedCount > 0) {
+                DialogHelper.showWarning("Внимание",
+                        "Пропущено %d ярлык(ов). Перетащите саму папку, не ярлык.".formatted(skippedCount));
+            }
+
             success = true;
             applySort();
             updateStatus();
@@ -305,13 +326,15 @@ public class MainController {
     @FXML
     private void onDragEntered(DragEvent event) {
         if (event.getDragboard().hasFiles()) {
-            fileListView.getStyleClass().add("drag-over");
+            if (!fileListView.getStyleClass().contains("drag-over")) {
+                fileListView.getStyleClass().add("drag-over");
+            }
         }
     }
 
     @FXML
     private void onDragExited(DragEvent event) {
-        fileListView.getStyleClass().remove("drag-over");
+        fileListView.getStyleClass().removeAll("drag-over");
     }
 
     /**
@@ -365,7 +388,9 @@ public class MainController {
         openInExplorer.setOnAction(e -> {
             new Thread(() -> {
                 FileInfo selected = fileListView.getSelectionModel().getSelectedItem();
-                if (selected == null) {return;}
+                if (selected == null) {
+                    return;
+                }
                 try {
                     Desktop.getDesktop().open(selected.getFile().getParentFile());
                 } catch (IOException ex) {
@@ -378,7 +403,9 @@ public class MainController {
         MenuItem clipboardItem = new MenuItem("Копировать путь");
         clipboardItem.setOnAction(e -> {
             FileInfo selected = fileListView.getSelectionModel().getSelectedItem();
-            if (selected == null) {return;}
+            if (selected == null) {
+                return;
+            }
             ClipboardContent content = new ClipboardContent();
             content.putString(selected.getAbsolutePath());
             Clipboard.getSystemClipboard().setContent(content);
@@ -407,6 +434,40 @@ public class MainController {
         fileListView.setContextMenu(menu);
     }
 
+    private void setupBindings() {
+
+        StringBinding filesCountToMerge = new StringBinding() {
+            {
+                bind(files);
+            }
+
+            @Override
+            protected String computeValue() {
+                if (files.isEmpty()) {
+                    return "Склеить";
+                } else {
+                    return "Склеить (%d)".formatted(files.size());
+                }
+            }
+        };
+        mergeButton.textProperty().bind(filesCountToMerge);
+
+        ObservableList<FileInfo> selectedItems = fileListView.getSelectionModel().getSelectedItems();
+
+        StringBinding selectedFiles = new StringBinding() {
+            {
+                bind(selectedItems);
+            }
+
+            @Override
+            protected String computeValue() {
+                return selectedItems.isEmpty() ? "Удалить" : "Удалить (%d)".formatted(selectedItems.size());
+            }
+        };
+
+        removeButton.textProperty().bind(selectedFiles);
+    }
+
     @FXML
     private void onSortChanged() {
         applySort();
@@ -419,6 +480,7 @@ public class MainController {
             FXCollections.sort(files, selected.getComparator());
         }
     }
+
     /**
      * Показывает временное сообщение в статусной строке.
      * Через 2 секунды автоматически восстанавливает стандартный статус.
