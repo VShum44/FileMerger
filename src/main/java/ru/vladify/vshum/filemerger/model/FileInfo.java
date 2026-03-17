@@ -1,6 +1,7 @@
 package ru.vladify.vshum.filemerger.model;
 
 import java.io.File;
+import java.util.Optional;
 
 import static ru.vladify.vshum.filemerger.config.AppConfig.BYTES_IN_KB;
 import static ru.vladify.vshum.filemerger.config.AppConfig.BYTES_IN_MB;
@@ -55,6 +56,17 @@ public class FileInfo {
 
     public long getWordCount() {
         return wordCount;
+    }
+
+    /**
+     * Возвращает расширение файла.
+     *
+     * @return Optional с расширением (например ".java") или пустой Optional
+     */
+    public Optional<String> getExtension(){
+        int index = file.getName().lastIndexOf(".");
+        if(index == -1) return Optional.empty();
+        return Optional.of(file.getName().substring(index));
     }
 
     /**

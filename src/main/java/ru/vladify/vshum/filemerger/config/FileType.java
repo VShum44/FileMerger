@@ -5,26 +5,28 @@ package ru.vladify.vshum.filemerger.config;
  * Каждый элемент содержит расширение и человекочитаемое описание.
  */
 public enum FileType {
-    JAVA(".java", "Java Source"),
-    GRADLE(".gradle", "Gradle Build"),
-    XML(".xml", "XML Document"),
-    KOTLIN(".kt", "Kotlin Source"),
-    JSON(".json", "JSON"),
-    YAML(".yaml", "YAML"),
-    YML(".yml", "YAML"),
-    PROPERTIES(".properties", "Properties"),
-    TEXT(".txt", "Text File"),
-    FXML(".fxml", "FXML Layout"),
-    CSS(".css", "CSS Stylesheet"),
-    HTML(".html", "HTML Layout"),
-    JAVA_SCRIPT(".js", "JAVA SCRIPT Source");
+    JAVA(".java", "Java Source", "java.png"),
+    GRADLE(".gradle", "Gradle Build", "gradle.png"),
+    XML(".xml", "XML Document", "document.png"),
+    KOTLIN(".kt", "Kotlin Source", "document.png"),
+    JSON(".json", "JSON", "document.png"),
+    YAML(".yaml", "YAML", "document.png"),
+    YML(".yml", "YAML", "document.png"),
+    PROPERTIES(".properties", "Properties", "document.png"),
+    TEXT(".txt", "Text File", "document.png"),
+    FXML(".fxml", "FXML Layout", "document.png"),
+    CSS(".css", "CSS Stylesheet", "css.jpg"),
+    HTML(".html", "HTML Layout", "html.png"),
+    JAVA_SCRIPT(".js", "JAVA SCRIPT Source", "document.png");
 
     private final String extension;
     private final String description;
+    private final String iconPath;
 
-    FileType(String extension, String description) {
+    FileType(String extension, String description, String iconPath) {
         this.extension = extension;
         this.description = description;
+        this.iconPath = iconPath;
     }
 
     public String getExtension() {
@@ -49,5 +51,20 @@ public enum FileType {
             }
         }
         return false;
+    }
+
+    /**
+     * Возвращает путь к иконке для файла с указанным расширением.
+     *
+     * @param extension расширение файла (например ".java")
+     * @return путь к ресурсу иконки
+     */
+    public static String getIconPath(String extension){
+        for (FileType value : values()) {
+            if (value.extension.equals(extension)){
+                return AppConfig.DEFAULT_PATH_TO_ICONS + value.iconPath;
+            }
+        }
+        return AppConfig.DEFAULT_ICON_PATH;
     }
 }
