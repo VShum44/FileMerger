@@ -21,6 +21,12 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:2.0.9'
     implementation 'ch.qos.logback:logback-classic:1.4.14'
 
+    // Документация JavaFX
+    implementation 'org.openjfx:javafx-controls:17.0.13:sources'
+    implementation 'org.openjfx:javafx-fxml:17.0.13:sources'
+    implementation 'org.openjfx:javafx-controls:17.0.13:javadoc'
+    implementation 'org.openjfx:javafx-fxml:17.0.13:javadoc'
+
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
