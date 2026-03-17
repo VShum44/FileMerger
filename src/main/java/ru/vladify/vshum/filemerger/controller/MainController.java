@@ -13,6 +13,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.*;
 import javafx.stage.FileChooser;
@@ -32,6 +33,7 @@ import ru.vladify.vshum.filemerger.util.FileInfoCell;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.MalformedInputException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,8 +45,11 @@ import java.util.List;
 public class MainController {
 
     private static final Logger log = LoggerFactory.getLogger(MainController.class);
-    public ProgressBar progressBar;
 
+    @FXML
+    private ProgressBar progressBar;
+    @FXML
+    private TextArea previewArea;
     @FXML
     private Button removeButton;
     @FXML
@@ -79,8 +84,28 @@ public class MainController {
         sortComboBox.getItems().addAll(SortOrder.values());
         sortComboBox.setValue(SortOrder.MANUAL);
 
-        // Настройка поискового поля
-        // Слушаем изменения текста:
+        fileListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+        Platform.runLater(this::setupHotkeys);
+        Platform.runLater(this::setupContextMenu);
+        Platform.runLater(this::setupBindings);
+        Platform.runLater(this::setupListeners);
+
+        updateStatus();
+
+        log.debug("Контроллер инициализирован, горячие клавиши настроены");
+    }
+
+    /**
+     * Настраивает слушатели:
+     * - поисковое поле — фильтрация списка по имени файла
+     * - выделение в ListView — загрузка превью содержимого файла
+     *
+     * <p>Большие файлы обрезаются до {@link AppConfig#MAX_PREVIEW} символов.
+     * Бинарные файлы показывают сообщение вместо содержимого.</p>
+     */
+    private void setupListeners() {
+        // Настройка поискового поля. Слушаем изменения текста:
         searchField.textProperty().addListener((obs, old, newValue) -> {
                     filteredFiles.setPredicate(fileInfo -> {
                         // Пустой поиск — показать всё
@@ -96,15 +121,32 @@ public class MainController {
 
         );
 
-        fileListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        // Настройка списка файлов.
+        // Слушаем выбранный элемент. Отображаем содержимое в соседней панели.
+        fileListView.getSelectionModel().selectedItemProperty().
+                addListener(((obs, old, selectedValue) -> {
+                    if (selectedValue == null) {
+                        return;
+                    }
 
-        Platform.runLater(this::setupHotkeys);
-        Platform.runLater(this::setupContextMenu);
-        Platform.runLater(this::setupBindings);
+                    String fileContext = "";
 
-        updateStatus();
+                    try {
+                        fileContext = Files.readString(selectedValue.getFile().toPath());
+                    } catch (MalformedInputException e) {
+                        previewArea.setText("[Бинарный файл]");
+                    } catch (IOException e) {
+                        previewArea.setText("[Ошибка: " + e.getMessage() + "]");
+                    }
 
-        log.debug("Контроллер инициализирован, горячие клавиши настроены");
+                    if (fileContext.length() > (int) AppConfig.MAX_PREVIEW) {
+                        fileContext = fileContext.substring(0, (int) AppConfig.MAX_PREVIEW) + "\n\n--- обрезано ---";
+                    }
+
+                    previewArea.setText(fileContext);
+                    previewArea.positionCaret(0);
+
+                }));
     }
 
     /**
@@ -157,6 +199,7 @@ public class MainController {
         }
         log.info("Список очищен ({} файлов удалено)", files.size());
         files.clear();
+        previewArea.clear();
         updateStatus();
     }
 
@@ -238,6 +281,7 @@ public class MainController {
         }
         log.info("Удалено файлов: {}", selected.size());
         files.removeAll(selected);
+        previewArea.clear();
         updateStatus();
     }
 
@@ -545,15 +589,15 @@ public class MainController {
 
     /**
      * Настраивает привязки (binding) текста кнопок к данным списка.
-     *
+     * <p>
      * Кнопка "Склеить" показывает количество файлов для склейки:
      * - Пусто → "Склеить"
      * - Есть файлы → "Склеить (5)"
-     *
+     * <p>
      * Кнопка "Удалить" показывает количество выделенных файлов:
      * - Ничего не выделено → "Удалить"
      * - Выделено → "Удалить (3)"
-     *
+     * <p>
      * Привязки обновляются автоматически при изменении списка или выделения.
      */
     private void setupBindings() {

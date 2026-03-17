@@ -18,6 +18,7 @@ public class AppConfig {
     // ===== Размеры файлов =====
     public static final long BYTES_IN_KB = 1024;
     public static final long BYTES_IN_MB = 1024 * 1024;
+    public static final long MAX_PREVIEW = 50_000;
 
     public static final int MAX_FILES_LIMIT = 5000;
 
