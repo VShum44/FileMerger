@@ -12,9 +12,11 @@ public class FileInfoCell extends ListCell<FileInfo> {
             setText(null);
             setGraphic(null);
         } else {
-            setText("%s  [%d строк · %s]  (%s)".formatted(
+            setText("%s  [%d строк · %s символов · %s слов · %s]  (%s)".formatted(
                     info.getName(),
                     info.getLineCount(),
+                    info.getCharCount(),
+                    info.getWordCount(),
                     FileInfo.formatSize(info.getSize()),
                     info.getParent()
             ));

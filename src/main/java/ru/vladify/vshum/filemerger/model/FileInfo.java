@@ -13,11 +13,16 @@ public class FileInfo {
     private final File file;
     private final long lineCount;
     private final long size;
+    private final long charCount;
+    private final long wordCount;
 
-    public FileInfo(File file, long lineCount, long size) {
+
+    public FileInfo(File file, long lineCount, long size, long charCount, long wordCount) {
         this.file = file;
         this.lineCount = lineCount;
         this.size = size;
+        this.charCount = charCount;
+        this.wordCount = wordCount;
     }
 
     public File getFile() {
@@ -42,6 +47,14 @@ public class FileInfo {
 
     public String getParent() {
         return file.getParent();
+    }
+
+    public long getCharCount() {
+        return charCount;
+    }
+
+    public long getWordCount() {
+        return wordCount;
     }
 
     /**

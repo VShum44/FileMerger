@@ -8,6 +8,7 @@ import ru.vladify.vshum.filemerger.model.FileInfo;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,13 +27,20 @@ public class FileService {
      */
     public FileInfo createFileInfo(File file) {
         long lines = 0;
+        long wordCount = 0;
+        long charCount = 0;
         try {
-            lines = Files.lines(file.toPath()).count();
+            Path path = file.toPath();
+            String content = Files.readString(path);
+
+            lines = content.lines().count();
+            wordCount = countWords(content);
+            charCount = content.length();
         } catch (Exception e) {
             // Бинарный файл или проблема с кодировкой — пропускаем подсчёт
             log.debug("Не удалось подсчитать строки (возможно бинарный файл): {} {}", file.getName(), file.getAbsolutePath());
         }
-        return new FileInfo(file, lines, file.length());
+        return new FileInfo(file, lines, file.length(), charCount, wordCount);
     }
     /**
      * Рекурсивно собирает файлы с поддерживаемыми расширениями.
@@ -64,5 +72,18 @@ public class FileService {
     private boolean isAcceptable(File file) {
         if (file.isDirectory()) return false;
         return FileType.isSupported(file.getName());
+    }
+
+    /**
+     * Подсчитывает количество слов в тексте.
+     * Словом считается последовательность символов, разделённая пробелами.
+     *
+     * @param content текстовое содержимое файла
+     * @return количество слов (0 для пустого текста)
+     */
+    private long countWords(String content) {
+        if (content == null || content.trim().isEmpty()) {return 0;}
+        //Делим по любым пробелам "\s+ - любое количество пробелов"
+        return content.split("\\s+").length;
     }
 }

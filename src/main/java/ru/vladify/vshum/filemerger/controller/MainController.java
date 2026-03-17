@@ -78,6 +78,7 @@ public class MainController {
         log.info("Инициализация контроллера");
         // Привязываем список к ListView — ОДИН раз при старте
         fileListView.setItems(filteredFiles);
+        // Определяем внешний вид файлов в списке
         fileListView.setCellFactory(param -> new FileInfoCell());
 
         // Настройка ComboBox сортировки
@@ -291,23 +292,27 @@ public class MainController {
      */
     private void updateStatus() {
         long totalLines = files.stream().mapToLong(FileInfo::getLineCount).sum();
+        long totalSize = files.stream().mapToLong(FileInfo::getSize).sum();
+        long totalChars = files.stream().mapToLong(FileInfo::getCharCount).sum();
+        long totalWords = files.stream().mapToLong(FileInfo::getWordCount).sum();
+
         // видимых после фильтрации
         long shownLines = filteredFiles.stream().mapToLong(FileInfo::getLineCount).sum();
-        long totalSize = files.stream().mapToLong(FileInfo::getSize).sum();
-        // видимых после фильтрации
         long shownSize = filteredFiles.stream().mapToLong(FileInfo::getSize).sum();
+        long shownChars = filteredFiles.stream().mapToLong(FileInfo::getCharCount).sum();
+        long shownWords = filteredFiles.stream().mapToLong(FileInfo::getWordCount).sum();
 
         String formattedSize;
         String statusLabelText;
+        String labelString = "Файлов: %d | Строк: %d | Символов %d | Слов %d | Размер: %s";
         if (totalSize == shownSize) {
             formattedSize = FileInfo.formatSize(totalSize);
-            statusLabelText = "Файлов: %d | Строк: %d | Размер: %s".formatted(files.size(), totalLines, formattedSize);
+            statusLabelText = labelString.formatted(files.size(), totalLines, totalChars, totalWords, formattedSize);
         } else {
             formattedSize = FileInfo.formatSize(shownSize);
-            statusLabelText = "Файлов: %d | Строк: %d | Размер: %s".formatted(filteredFiles.size(), shownLines, formattedSize);
+            statusLabelText = labelString.formatted(filteredFiles.size(), shownLines, shownChars, shownWords, formattedSize);
         }
 
-//        statusLabel.textProperty().unbind();
         statusLabel.setText(statusLabelText);
 
         if (fileListView.getScene() != null) {

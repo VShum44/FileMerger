@@ -26,6 +26,8 @@ public class FileMergerService implements MergeService {
         int total = fileInfos.size();
         long totalLines = 0;
         long totalSize = 0;
+        long totalWords = 0;
+        long totalChars = 0;
 
         for (int i = 0; i < total; i++) {
             FileInfo info = fileInfos.get(i);
@@ -38,17 +40,23 @@ public class FileMergerService implements MergeService {
             sb.append("=== Путь: %s\n".formatted(info.getAbsolutePath()));
             sb.append("=== Размер: %s\n".formatted(FileInfo.formatSize(info.getSize())));
             sb.append("=== Строк: %d\n".formatted(info.getLineCount()));
+            sb.append("=== Кол-во символов: %d\n".formatted(info.getCharCount()));
+            sb.append("=== Кол-во слов: %d\n".formatted(info.getWordCount()));
             sb.append(AppConfig.SEPARATOR).append("\n\n");
             sb.append(content).append("\n\n");
 
             totalLines += info.getLineCount();
             totalSize += info.getSize();
+            totalWords += info.getWordCount();
+            totalChars += info.getCharCount();
         }
         // Итоговая статистика
         sb.append(AppConfig.SEPARATOR).append("\n");
         sb.append("=== ИТОГО\n");
         sb.append("=== Файлов: %d\n".formatted(total));
         sb.append("=== Строк: %d\n".formatted(totalLines));
+        sb.append("=== Кол-во символов: %d\n".formatted(totalChars));
+        sb.append("=== Кол-во слов: %d\n".formatted(totalWords));
         sb.append("=== Размер: %s\n".formatted(FileInfo.formatSize(totalSize)));
         sb.append(AppConfig.SEPARATOR).append("\n");
 
