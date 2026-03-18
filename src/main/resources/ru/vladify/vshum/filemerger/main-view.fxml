@@ -9,7 +9,7 @@
 
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
-<VBox prefHeight="500" prefWidth="700" spacing="10" xmlns="http://javafx.com/javafx/17.0.12"
+<VBox prefHeight="750" prefWidth="1100" spacing="10" xmlns="http://javafx.com/javafx/17.0.12"
       xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.vladify.vshum.filemerger.controller.MainController">
 
     <padding>
@@ -66,6 +66,7 @@
                          visible="false"
                          maxHeight="Infinity"/>
         </HBox>
+    </VBox>
 
         <SplitPane dividerPositions="0.7" VBox.vgrow="ALWAYS">
             <!--  Место для списка файлов -->
@@ -78,9 +79,6 @@
             <!--  Место для просмотра содержимого файлов -->
             <TextArea fx:id="previewArea" editable="false" promptText="Выберите элемент" wrapText="true"/>
         </SplitPane>
-
-
-    </VBox>
 
     <!-- 3. Кнопки -->
     <HBox spacing="8">
