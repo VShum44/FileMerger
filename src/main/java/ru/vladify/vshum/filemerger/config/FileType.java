@@ -5,11 +5,11 @@ package ru.vladify.vshum.filemerger.config;
  * Каждый элемент содержит расширение и человекочитаемое описание.
  */
 public enum FileType {
-    JAVA(".java", "Java Source", "java.jpg"),
+    JAVA(".java", "Java Source", "java.png"),
     GRADLE(".gradle", "Gradle Build", "gradle.png"),
     XML(".xml", "XML Document", "xml.png"),
-    KOTLIN(".kt", "Kotlin Source", "document.png"),
-    JSON(".json", "JSON", "document.png"),
+    KOTLIN(".kt", "Kotlin Source", "kotlin.png"),
+    JSON(".json", "JSON", "json.png"),
     YAML(".yaml", "YAML", "document.png"),
     YML(".yml", "YAML", "document.png"),
     PROPERTIES(".properties", "Properties", "document.png"),
@@ -17,7 +17,7 @@ public enum FileType {
     FXML(".fxml", "FXML Layout", "document.png"),
     CSS(".css", "CSS Stylesheet", "css.png"),
     HTML(".html", "HTML Layout", "html.png"),
-    JAVA_SCRIPT(".js", "JAVA SCRIPT Source", "js.jpg");
+    JAVA_SCRIPT(".js", "JAVA SCRIPT Source", "js.png");
 
     private final String extension;
     private final String description;
