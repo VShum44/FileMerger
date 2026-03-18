@@ -16,9 +16,14 @@
 
     <HBox spacing="8.0">
         <!--  Заголовок -->
-        <Label styleClass="title-label" text="File Merger v1.2"/>
+        <Label fx:id="titleLabel" styleClass="title-label" text="File Merger v1.2"/>
         <!-- Пружина — занимает всё свободное место -->
         <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="aboutButton" text="ℹ️" onAction="#onAbout">
+            <tooltip>
+                <Tooltip text="О программе"/>
+            </tooltip>
+        </Button>
         <!-- Кнопка темы прижата вправо -->
         <Button fx:id="themeButton" text="🌙" onAction="#onToggleTheme">
             <tooltip>

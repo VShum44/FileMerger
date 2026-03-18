@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!-- about-view.fxml -->
+<?import javafx.geometry.Insets?>
+<VBox alignment="CENTER" spacing="12" prefWidth="350" prefHeight="250"
+      fx:controller="ru.vladify.vshum.filemerger.controller.AboutController"
+      xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
+    <padding>
+        <Insets topRightBottomLeft="20"/>
+    </padding>
+
+    <Label fx:id="appNameLabel" text="File Merger" styleClass="about-title"/>
+    <Label fx:id="versionLabel" text="Версия 1.0"/>
+    <Label text="Склейка текстовых файлов в один"/>
+
+    <Separator/>
+
+    <Label text="Автор: VShum"/>
+    <Hyperlink text="GitHub" onAction="#onGitHubLink"/>
+
+    <Separator/>
+
+    <Button fx:id="closeButton" text="OK" onAction="#onClose"/>
+</VBox>

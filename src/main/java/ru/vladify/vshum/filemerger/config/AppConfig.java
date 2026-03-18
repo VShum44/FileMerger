@@ -8,7 +8,7 @@ public class AppConfig {
 
     // ===== Приложение =====
     public static final String APP_NAME = "File Merger";
-    public static final String APP_VERSION = "1.0";
+    public static final String APP_VERSION = "1.2";
     public static final String APP_TITLE = APP_NAME + " v" + APP_VERSION;
 
     // ===== Склейка =====

@@ -7,8 +7,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
@@ -17,7 +17,9 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.*;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.slf4j.Logger;
@@ -48,7 +50,8 @@ public class MainController {
 
     private static final Logger log = LoggerFactory.getLogger(MainController.class);
     @FXML
-    private Button themeButton;
+    private Label titleLabel;
+    @FXML private Button themeButton;
     @FXML
     private ProgressBar progressBar;
     @FXML
@@ -80,6 +83,7 @@ public class MainController {
     @FXML
     public void initialize() {
         log.info("Инициализация контроллера");
+        titleLabel.setText(AppConfig.APP_TITLE);
         // Привязываем список к ListView — ОДИН раз при старте
         fileListView.setItems(filteredFiles);
         // Определяем внешний вид файлов в списке
@@ -486,6 +490,38 @@ public class MainController {
 
         // Меняем иконку кнопки
         themeButton.setText(themeManager.isDark() ? "☀️" : "🌙");
+    }
+
+    /**
+     * Открывает модальное окно «О программе».
+     * Загружает about-view.fxml, копирует стили из основного окна.
+     */
+    @FXML
+    private void onAbout() {
+        try {
+
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/ru/vladify/vshum/filemerger/about-view.fxml")
+            );
+            VBox root = loader.load();
+
+            Stage aboutStage = new Stage();
+            aboutStage.setTitle("О программе");
+            aboutStage.initModality(Modality.APPLICATION_MODAL);
+            aboutStage.initOwner(fileListView.getScene().getWindow());
+            aboutStage.setResizable(false);
+
+            Scene scene = new Scene(root);
+            // Подключаем те же стили
+            scene.getStylesheets().addAll(
+                    fileListView.getScene().getStylesheets()
+            );
+
+            aboutStage.setScene(scene);
+            aboutStage.showAndWait();
+        } catch (IOException e) {
+            log.error("Ошибка открытия окна About", e);
+        }
     }
 
     /**

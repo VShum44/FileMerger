@@ -58,3 +58,8 @@
 #progressBar:visible {
     -fx-padding: 4;
 }
+
+.about-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
