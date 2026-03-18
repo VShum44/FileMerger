@@ -55,3 +55,33 @@ shadowJar {
         attributes('Main-Class': 'ru.vladify.vshum.filemerger.Launcher')
     }
 }
+
+tasks.register('buildExe', Exec) {
+    dependsOn shadowJar
+
+    doFirst {
+        copy {
+            from "build/libs/FileMerger.jar"
+            into "packaging/input"
+        }
+        delete "packaging/output"
+    }
+
+//     Сборка exe файла
+//    .\gradlew clean buildExe
+//    .\gradlew buildExe → packaging\output\FileMerger\FileMerger.exe
+    commandLine(
+            'jpackage',
+            '--type', 'app-image',
+            '--name', 'FileMerger',
+            '--app-version', '1.2.0',
+            '--vendor', 'Vladify',
+            '--description', 'File Merger - JavaFX Application',
+            '--icon', 'packaging/icon.ico',
+            '--input', 'packaging/input',
+            '--main-jar', 'FileMerger.jar',
+            '--main-class', 'ru.vladify.vshum.filemerger.Launcher',
+            '--dest', 'packaging/output',
+            '--java-options', '-Xmx512m'
+    )
+}
