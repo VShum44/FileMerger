@@ -1,14 +1,10 @@
-/* ===== Общие стили ===== */
+/* ===== Общие ===== */
 .root {
     -fx-background-color: #f5f5f5;
-    -fx-font-family: "Segoe UI", Arial, sans-serif;
-    -fx-font-size: 13px;
 }
 
 /* ===== Заголовок ===== */
 .title-label {
-    -fx-font-size: 20px;
-    -fx-font-weight: bold;
     -fx-text-fill: #333333;
 }
 
@@ -16,35 +12,38 @@
 .list-view {
     -fx-background-color: white;
     -fx-border-color: #cccccc;
-    -fx-border-radius: 4;
-    -fx-background-radius: 4;
 }
 
-/* Ячейка списка при наведении */
+.list-cell {
+    -fx-background-color: white;
+    -fx-text-fill: #333333;
+}
+
 .list-cell:hover {
     -fx-background-color: #e8f5e9;
 }
 
-/* Выбранная ячейка */
 .list-cell:selected {
     -fx-background-color: #4CAF50;
     -fx-text-fill: white;
 }
 
-/* Выбранная ячейка без фокуса — чуть бледнее */
 .list-cell:selected:unfocused {
     -fx-background-color: #81C784;
     -fx-text-fill: white;
+}
+
+/* ===== TextArea (превью) ===== */
+.text-area {
+    -fx-control-inner-background: white;
+    -fx-text-fill: #333333;
+    -fx-border-color: #cccccc;
 }
 
 /* ===== Кнопки ===== */
 .button {
     -fx-background-color: #4CAF50;
     -fx-text-fill: white;
-    -fx-font-size: 13px;
-    -fx-padding: 8 16;
-    -fx-background-radius: 4;
-    -fx-cursor: hand;
 }
 
 .button:hover {
@@ -55,7 +54,6 @@
     -fx-background-color: #388E3C;
 }
 
-/* Кнопка "Очистить" — другой цвет */
 .button-danger {
     -fx-background-color: #f44336;
 }
@@ -64,7 +62,6 @@
     -fx-background-color: #e53935;
 }
 
-/* Кнопка "Склеить" — акцентная */
 .button-primary {
     -fx-background-color: #2196F3;
 }
@@ -75,44 +72,42 @@
 
 /* ===== Статус ===== */
 #statusLabel {
-    -fx-font-size: 12px;
     -fx-text-fill: #888888;
-    -fx-padding: 4 0 0 0;
 }
 
-/* ===== Drag & Drop подсветка ===== */
+/* ===== Drag & Drop ===== */
 .drag-over {
     -fx-border-color: #4CAF50;
-    -fx-border-width: 3;
-    -fx-border-style: dashed;
-    -fx-border-radius: 4;
 }
 
-.tooltip {
-    -fx-show-delay: 200ms;
-    -fx-hide-delay: 100ms;
-    -fx-font-size: 12px;
-}
-
-/* ===== ComboBox сортировки ===== */
+/* ===== ComboBox ===== */
 .combo-box {
     -fx-background-color: white;
     -fx-border-color: #cccccc;
-    -fx-border-radius: 4;
-    -fx-background-radius: 4;
-    -fx-padding: 4 8;
-    -fx-cursor: hand;
 }
 
 .combo-box:hover {
     -fx-border-color: #4CAF50;
 }
 
-#progressBar {
-    -fx-accent: #2196F3;
-    -fx-control-inner-background: #e0e0e0;
+/* ===== TextField (поиск) ===== */
+.text-field {
+    -fx-background-color: white;
+    -fx-text-fill: #333333;
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 4;
 }
 
-#progressBar:visible {
-    -fx-padding: 4;
+/* ===== ProgressBar ===== */
+#progressBar {
+    -fx-accent: #2196F3;
+}
+
+/* ===== SplitPane ===== */
+.split-pane {
+    -fx-background-color: #f5f5f5;
+}
+
+.split-pane-divider {
+    -fx-background-color: #cccccc;
 }

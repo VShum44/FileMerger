@@ -1,0 +1,147 @@
+/* ===== Общие ===== */
+.root {
+    -fx-background-color: #2b2b2b;
+}
+
+/* ===== Заголовок ===== */
+.title-label {
+    -fx-text-fill: #e0e0e0;
+}
+
+/* ===== Список файлов ===== */
+.list-view {
+    -fx-background-color: #333333;
+    -fx-border-color: #555555;
+}
+
+.list-cell {
+    -fx-background-color: #333333;
+    -fx-text-fill: #cccccc;
+}
+
+.list-cell:empty {
+    -fx-background-color: #333333;
+}
+
+.list-cell:hover {
+    -fx-background-color: #3a4a3a;
+}
+
+.list-cell:selected {
+    -fx-background-color: #2e7d32;
+    -fx-text-fill: white;
+}
+
+.list-cell:selected:unfocused {
+    -fx-background-color: #1b5e20;
+    -fx-text-fill: #e0e0e0;
+}
+
+/* ===== TextArea (превью) ===== */
+.text-area {
+    -fx-control-inner-background: #333333;
+    -fx-text-fill: #cccccc;
+    -fx-border-color: #555555;
+}
+
+.text-area .content {
+    -fx-background-color: #333333;
+}
+
+/* ===== Кнопки ===== */
+.button {
+    -fx-background-color: #3a6e3a;
+    -fx-text-fill: #e0e0e0;
+}
+
+.button:hover {
+    -fx-background-color: #4a8a4a;
+}
+
+.button:pressed {
+    -fx-background-color: #2e5a2e;
+}
+
+.button-danger {
+    -fx-background-color: #8b2020;
+}
+
+.button-danger:hover {
+    -fx-background-color: #a52828;
+}
+
+.button-primary {
+    -fx-background-color: #1565c0;
+}
+
+.button-primary:hover {
+    -fx-background-color: #1976d2;
+}
+
+/* ===== Статус ===== */
+#statusLabel {
+    -fx-text-fill: #999999;
+}
+
+/* ===== Drag & Drop ===== */
+.drag-over {
+    -fx-border-color: #4CAF50;
+}
+
+/* ===== ComboBox ===== */
+.combo-box {
+    -fx-background-color: #3c3c3c;
+    -fx-border-color: #555555;
+}
+
+.combo-box:hover {
+    -fx-border-color: #4CAF50;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: #3c3c3c;
+    -fx-text-fill: #cccccc;
+}
+
+/* ===== TextField (поиск) ===== */
+.text-field {
+    -fx-background-color: #3c3c3c;
+    -fx-text-fill: #cccccc;
+    -fx-border-color: #555555;
+    -fx-border-radius: 4;
+    -fx-prompt-text-fill: #777777;
+}
+
+/* ===== ProgressBar ===== */
+#progressBar {
+    -fx-accent: #1565c0;
+    -fx-control-inner-background: #444444;
+}
+
+/* ===== SplitPane ===== */
+.split-pane {
+    -fx-background-color: #2b2b2b;
+}
+
+.split-pane-divider {
+    -fx-background-color: #555555;
+}
+
+/* ===== Label ===== */
+.label {
+    -fx-text-fill: #cccccc;
+}
+
+/* ===== ScrollBar ===== */
+.scroll-bar {
+    -fx-background-color: #333333;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #666666;
+    -fx-background-radius: 4;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #888888;
+}

@@ -1,0 +1,60 @@
+/* ===== Общие стили ===== */
+.root {
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-font-size: 13px;
+}
+
+/* ===== Заголовок ===== */
+.title-label {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+/* ===== Список файлов ===== */
+.list-view {
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+/* ===== Кнопки ===== */
+.button {
+    -fx-font-size: 13px;
+    -fx-padding: 8 16;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+}
+
+/* ===== Статус ===== */
+#statusLabel {
+    -fx-font-size: 12px;
+    -fx-padding: 4 0 0 0;
+}
+
+/* ===== Drag & Drop подсветка ===== */
+.drag-over {
+    -fx-border-width: 3;
+    -fx-border-style: dashed;
+    -fx-border-radius: 4;
+}
+
+.tooltip {
+    -fx-show-delay: 200ms;
+    -fx-hide-delay: 100ms;
+    -fx-font-size: 12px;
+}
+
+/* ===== ComboBox ===== */
+.combo-box {
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 4 8;
+    -fx-cursor: hand;
+}
+
+#progressBar {
+    -fx-control-inner-background: #e0e0e0;
+}
+
+#progressBar:visible {
+    -fx-padding: 4;
+}

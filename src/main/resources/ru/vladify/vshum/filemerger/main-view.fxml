@@ -5,91 +5,93 @@
 
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.effect.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox prefHeight="500" prefWidth="700" spacing="10" xmlns:fx="http://javafx.com/fxml/1"
-      xmlns="http://javafx.com/javafx/17.0.12" fx:controller="ru.vladify.vshum.filemerger.controller.MainController">
+<VBox prefHeight="500" prefWidth="700" spacing="10" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.vladify.vshum.filemerger.controller.MainController">
 
     <padding>
-        <Insets bottom="15" left="15" right="15" top="15"/>
+        <Insets bottom="15" left="15" right="15" top="15" />
     </padding>
 
-    <!--  Заголовок -->
-    <Label styleClass="title-label" text="File Merger v1.0"/>
+    <HBox spacing="8.0">
+        <!--  Заголовок -->
+        <Label styleClass="title-label" text="File Merger v1.0" />
+
+        <Button fx:id="themeButton" onAction="#onToggleTheme" text="🌙" />
+    </HBox>
+
 
     <!-- TODO: добавить выбор папки добавления файлов и сохранения по умолчанию, настройку расширения из UI -->
 
     <VBox spacing="8">
-        <TextField fx:id="searchField" promptText="Поиск по названию..."/>
+        <TextField fx:id="searchField" promptText="Поиск по названию..." />
 
-        <!-- Индикатор прогресса (скрыт по умолчанию) -->
-        <ProgressBar fx:id="progressBar" prefHeight="20.0" prefWidth="200.0" progress="0.0" visible="false"/>
+
         <SplitPane dividerPositions="0.4" VBox.vgrow="ALWAYS">
             <!--  Место для списка файлов -->
-            <ListView fx:id="fileListView" onDragDropped="#onDragDropped" onDragEntered="#onDragEntered"
-                      onDragExited="#onDragExited" onDragOver="#onDragOver" VBox.vgrow="ALWAYS">
+            <ListView fx:id="fileListView" onDragDropped="#onDragDropped" onDragEntered="#onDragEntered" onDragExited="#onDragExited" onDragOver="#onDragOver" VBox.vgrow="ALWAYS">
                 <placeholder>
-                    <Label text="Перетащите файлы сюда или нажмите 'Добавить'"/>
+                    <Label text="Перетащите файлы сюда или нажмите 'Добавить'" />
                 </placeholder>
             </ListView>
             <!--  Место для просмотра содержимого файлов -->
-            <TextArea fx:id="previewArea"
-                      editable="false"
-                      wrapText="true"
-                      promptText="Выберите элемент"/>
+            <TextArea fx:id="previewArea" editable="false" promptText="Выберите элемент" wrapText="true" />
         </SplitPane>
 
 
     </VBox>
 
-
     <!-- 3. Кнопки -->
     <HBox spacing="8">
         <Button onAction="#onAddFiles" text="Добавить">
             <tooltip>
-                <Tooltip text="Добавить файлы (Ctrl+O)"/>
+                <Tooltip text="Добавить файлы (Ctrl+O)" />
             </tooltip>
         </Button>
 
         <Button onAction="#onMoveUp" text="▲">
             <tooltip>
-                <Tooltip text="Переместить вверх"/>
+                <Tooltip text="Переместить вверх" />
             </tooltip>
         </Button>
 
         <Button onAction="#onMoveDown" text="▼">
             <tooltip>
-                <Tooltip text="Переместить вниз"/>
+                <Tooltip text="Переместить вниз" />
             </tooltip>
         </Button>
 
         <Button fx:id="removeButton" onAction="#onRemove" styleClass="button-danger" text="Удалить">
             <tooltip>
-                <Tooltip text="Удалить выбранные (Delete). Ctrl+Click — выбрать несколько"/>
+                <Tooltip text="Удалить выбранные (Delete). Ctrl+Click — выбрать несколько" />
             </tooltip>
         </Button>
 
         <Button onAction="#onClear" styleClass="button-danger" text="Очистить">
             <tooltip>
-                <Tooltip text="Очистить список"/>
+                <Tooltip text="Очистить список" />
             </tooltip>
         </Button>
 
         <Button fx:id="mergeButton" onAction="#onMerge" styleClass="button-primary" text="Склеить">
             <tooltip>
-                <Tooltip text="Склеить и сохранить (Ctrl+S)"/>
+                <Tooltip text="Склеить и сохранить (Ctrl+S)" />
             </tooltip>
         </Button>
 
         <ComboBox fx:id="sortComboBox" onAction="#onSortChanged">
             <tooltip>
-                <Tooltip text="Сортировка списка"/>
+                <Tooltip text="Сортировка списка" />
             </tooltip>
         </ComboBox>
     </HBox>
 
     <!-- 4. Статус внизу -->
-    <Label fx:id="statusLabel" text="Статус: готов"/>
+    <HBox spacing="8.0">
+        <Label fx:id="statusLabel" text="Статус: готов" />
+        <!-- Индикатор прогресса (скрыт по умолчанию) -->
+        <ProgressBar fx:id="progressBar" prefHeight="20.0" prefWidth="200.0" progress="0.0" visible="false" />
+
+    </HBox>
 
 </VBox>

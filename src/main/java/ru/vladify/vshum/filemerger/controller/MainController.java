@@ -7,6 +7,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -29,6 +30,7 @@ import ru.vladify.vshum.filemerger.service.FileService;
 import ru.vladify.vshum.filemerger.service.MergeService;
 import ru.vladify.vshum.filemerger.util.DialogHelper;
 import ru.vladify.vshum.filemerger.util.FileInfoCell;
+import ru.vladify.vshum.filemerger.util.ThemeManager;
 
 import java.awt.*;
 import java.io.File;
@@ -45,7 +47,8 @@ import java.util.List;
 public class MainController {
 
     private static final Logger log = LoggerFactory.getLogger(MainController.class);
-
+    @FXML
+    private Button themeButton;
     @FXML
     private ProgressBar progressBar;
     @FXML
@@ -68,6 +71,7 @@ public class MainController {
 
     private final MergeService fileMergerService = new FileMergerService();
     private final FileService fileService = new FileService();
+    private ThemeManager themeManager = new ThemeManager();
 
     /**
      * Инициализация контроллера — настройка ListView, фильтрации,
@@ -469,6 +473,19 @@ public class MainController {
                 return result;
             }
         };
+    }
+
+    /**
+     * Переключает тему приложения и обновляет иконку кнопки.
+     * 🌙 — переключить на тёмную, ☀️ — на светлую.
+     */
+    @FXML
+    private void onToggleTheme() {
+        Scene scene = themeButton.getScene();
+        themeManager.toggle(scene);
+
+        // Меняем иконку кнопки
+        themeButton.setText(themeManager.isDark() ? "☀️" : "🌙");
     }
 
     /**

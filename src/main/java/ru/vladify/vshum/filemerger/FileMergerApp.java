@@ -42,9 +42,8 @@ public class FileMergerApp extends Application {
     });
 
         // Подключаем CSS
-        scene.getStylesheets().add(
-                getClass().getResource("style.css").toExternalForm()
-        );
+        scene.getStylesheets().add(getClass().getResource("style/style.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("style/theme-light.css").toExternalForm());
 
         primaryStage.setTitle(AppConfig.APP_TITLE);
         primaryStage.setScene(scene);
