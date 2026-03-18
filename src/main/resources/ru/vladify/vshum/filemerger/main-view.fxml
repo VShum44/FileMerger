@@ -7,6 +7,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 <VBox prefHeight="500" prefWidth="700" spacing="10" xmlns="http://javafx.com/javafx/17.0.12"
       xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.vladify.vshum.filemerger.controller.MainController">
 
@@ -19,16 +21,32 @@
         <Label fx:id="titleLabel" styleClass="title-label" text="File Merger v1.2"/>
         <!-- Пружина — занимает всё свободное место -->
         <Region HBox.hgrow="ALWAYS"/>
-        <Button fx:id="aboutButton" text="ℹ️" onAction="#onAbout">
+        <Button fx:id="aboutButton"
+                styleClass="icon-button"
+                onAction="#onAbout">
             <tooltip>
                 <Tooltip text="О программе"/>
             </tooltip>
+            <graphic>
+                <ImageView fitWidth="18" fitHeight="18"
+                           preserveRatio="true">
+                    <image>
+                        <Image url="@icons/info.png"/>
+                    </image>
+                </ImageView>
+            </graphic>
         </Button>
         <!-- Кнопка темы прижата вправо -->
-        <Button fx:id="themeButton" text="🌙" onAction="#onToggleTheme">
+        <Button fx:id="themeButton"
+                onAction="#onToggleTheme"
+                styleClass="icon-button">
             <tooltip>
                 <Tooltip text="Переключить тему"/>
             </tooltip>
+            <graphic>
+                <ImageView fx:id="themeIcon" fitWidth="18" fitHeight="18"
+                           preserveRatio="true"/>
+            </graphic>
         </Button>
     </HBox>
 
@@ -49,7 +67,7 @@
                          maxHeight="Infinity"/>
         </HBox>
 
-        <SplitPane dividerPositions="0.4" VBox.vgrow="ALWAYS">
+        <SplitPane dividerPositions="0.7" VBox.vgrow="ALWAYS">
             <!--  Место для списка файлов -->
             <ListView fx:id="fileListView" onDragDropped="#onDragDropped" onDragEntered="#onDragEntered"
                       onDragExited="#onDragExited" onDragOver="#onDragOver" VBox.vgrow="ALWAYS">

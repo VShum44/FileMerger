@@ -16,6 +16,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -34,7 +36,7 @@ import ru.vladify.vshum.filemerger.util.DialogHelper;
 import ru.vladify.vshum.filemerger.util.FileInfoCell;
 import ru.vladify.vshum.filemerger.util.ThemeManager;
 
-import java.awt.*;
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.MalformedInputException;
@@ -69,6 +71,15 @@ public class MainController {
     @FXML
     private ComboBox<SortOrder> sortComboBox;
 
+    @FXML
+    private ImageView themeIcon;
+
+    // Кэшируем иконки чтобы не грузить каждый раз
+    private final Image sunIcon = new Image(
+            getClass().getResourceAsStream(AppConfig.DEFAULT_PATH_TO_ICONS + "sun.png"));
+    private final Image moonIcon = new Image(
+            getClass().getResourceAsStream(AppConfig.DEFAULT_PATH_TO_ICONS + "moon.png"));
+
     private final ObservableList<FileInfo> files = FXCollections.observableArrayList();
     private final FilteredList<FileInfo> filteredFiles = new FilteredList<>(files, f -> true);
 
@@ -84,6 +95,7 @@ public class MainController {
     public void initialize() {
         log.info("Инициализация контроллера");
         titleLabel.setText(AppConfig.APP_TITLE);
+        updateThemeIcon();
         // Привязываем список к ListView — ОДИН раз при старте
         fileListView.setItems(filteredFiles);
         // Определяем внешний вид файлов в списке
@@ -335,6 +347,14 @@ public class MainController {
         }
     }
 
+    private void updateThemeIcon() {
+        if (themeManager.isDark()) {
+            themeIcon.setImage(sunIcon);   // тёмная тема → показываем солнце
+        } else {
+            themeIcon.setImage(moonIcon);  // светлая тема → показываем луну
+        }
+    }
+
 
     @FXML
     private void onDragOver(DragEvent event) {
@@ -489,7 +509,7 @@ public class MainController {
         themeManager.toggle(scene);
 
         // Меняем иконку кнопки
-        themeButton.setText(themeManager.isDark() ? "☀️" : "🌙");
+        updateThemeIcon();
     }
 
     /**

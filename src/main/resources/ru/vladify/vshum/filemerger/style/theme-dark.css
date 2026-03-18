@@ -62,6 +62,11 @@
     -fx-background-color: #2e5a2e;
 }
 
+/* Иконки без фона — перебиваем стиль .button */
+.icon-button {
+    -fx-background-color: transparent;
+}
+
 .button-danger {
     -fx-background-color: #8b2020;
 }
@@ -144,4 +149,18 @@
 
 .scroll-bar .thumb:hover {
     -fx-background-color: #888888;
+}
+
+/* Для тёмной темы — инвертируем иконки если они чёрные */
+.dark .icon-button .image-view {
+    -fx-opacity: 0.9;
+}
+
+/* ===== Hyperlink ===== */
+.hyperlink {
+    -fx-text-fill: #64b5f6;
+}
+
+.hyperlink:hover {
+    -fx-text-fill: #90caf9;
 }

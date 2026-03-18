@@ -54,6 +54,11 @@
     -fx-background-color: #388E3C;
 }
 
+/* Иконки без фона — перебиваем стиль .button */
+.icon-button {
+    -fx-background-color: transparent;
+}
+
 .button-danger {
     -fx-background-color: #f44336;
 }
@@ -110,4 +115,13 @@
 
 .split-pane-divider {
     -fx-background-color: #cccccc;
+}
+
+/* ===== Hyperlink ===== */
+.hyperlink {
+    -fx-text-fill: #1976d2;
+}
+
+.hyperlink:hover {
+    -fx-text-fill: #1565c0;
 }

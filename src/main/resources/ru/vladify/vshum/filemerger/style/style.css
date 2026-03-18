@@ -63,3 +63,36 @@
     -fx-font-size: 24px;
     -fx-font-weight: bold;
 }
+
+/* Кнопка без фона, только иконка */
+.icon-button {
+    -fx-background-color: transparent;
+    -fx-padding: 6px;
+    -fx-cursor: hand;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+}
+
+.icon-button:hover {
+    -fx-background-color: rgba(128, 128, 128, 0.2);
+}
+
+.icon-button:pressed {
+    -fx-background-color: rgba(128, 128, 128, 0.3);
+}
+
+/* ===== Hyperlink ===== */
+.hyperlink {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+}
+
+.hyperlink:focused {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+.hyperlink:visited {
+    -fx-text-fill: #1976d2;
+}
