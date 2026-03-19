@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!-- settings-view.fxml -->
+<?import javafx.geometry.Insets?>
+<VBox spacing="16" prefWidth="450" prefHeight="200"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ru.vladify.vshum.filemerger.controller.SettingsController">
+    <padding>
+        <Insets topRightBottomLeft="20"/>
+    </padding>
+
+    <!-- Папка добавления -->
+    <VBox spacing="4">
+        <Label text="Папка добавления файлов:"/>
+        <HBox spacing="8" alignment="CENTER_LEFT">
+            <TextField fx:id="inputDirField" editable="false"
+                       HBox.hgrow="ALWAYS"/>
+            <Button text="Выбрать..." onAction="#onChooseInputDir"/>
+        </HBox>
+    </VBox>
+
+    <!-- Папка сохранения -->
+    <VBox spacing="4">
+        <Label text="Папка сохранения результата:"/>
+        <HBox spacing="8" alignment="CENTER_LEFT">
+            <TextField fx:id="outputDirField" editable="false"
+                       HBox.hgrow="ALWAYS"/>
+            <Button text="Выбрать..." onAction="#onChooseOutputDir"/>
+        </HBox>
+    </VBox>
+
+    <!-- Кнопки -->
+    <HBox spacing="8" alignment="CENTER_RIGHT">
+        <Button text="Сбросить" onAction="#onReset"
+                styleClass="button-danger"/>
+        <Button text="OK" onAction="#onSave"
+                styleClass="button-primary"/>
+    </HBox>
+</VBox>

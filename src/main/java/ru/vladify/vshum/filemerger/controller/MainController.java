@@ -27,6 +27,7 @@ import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.vladify.vshum.filemerger.config.AppConfig;
+import ru.vladify.vshum.filemerger.config.SettingsManager;
 import ru.vladify.vshum.filemerger.config.SortOrder;
 import ru.vladify.vshum.filemerger.model.FileInfo;
 import ru.vladify.vshum.filemerger.service.FileMergerService;
@@ -53,7 +54,8 @@ public class MainController {
     private static final Logger log = LoggerFactory.getLogger(MainController.class);
     @FXML
     private Label titleLabel;
-    @FXML private Button themeButton;
+    @FXML
+    private Button themeButton;
     @FXML
     private ProgressBar progressBar;
     @FXML
@@ -180,6 +182,10 @@ public class MainController {
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Выберите файлы");
+        File inputDir = new File(SettingsManager.getInputDir());
+        if (inputDir.exists() && inputDir.isDirectory()) {
+            fileChooser.setInitialDirectory(inputDir);
+        }
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter(
                         "Исходный код",
@@ -193,7 +199,7 @@ public class MainController {
         Stage stage = (Stage) fileListView.getScene().getWindow();
         List<File> selectedFiles = fileChooser.showOpenMultipleDialog(stage);
 
-        if (selectedFiles != null) {
+        if (selectedFiles != null && !selectedFiles.isEmpty()) {
             log.info("Добавлено файлов: {}", selectedFiles.size());
             for (File file : selectedFiles) {
                 FileInfo info = fileService.createFileInfo(file);
@@ -201,6 +207,10 @@ public class MainController {
                     files.add(info);
                 }
             }
+
+            String parentDir = selectedFiles.get(0).getParent();
+            SettingsManager.setInputDir(parentDir);
+
             applySort();
             updateStatus();
         }
@@ -252,6 +262,11 @@ public class MainController {
         // 3. Диалог сохранения
         FileChooser saveChooser = new FileChooser();
         saveChooser.setTitle("Сохранить результат");
+        File outputDir = new File(SettingsManager.getOutputDir());
+        if (outputDir.exists() && outputDir.isDirectory()) {
+            saveChooser.setInitialDirectory(outputDir);
+        }
+
         saveChooser.setInitialFileName(AppConfig.DEFAULT_OUTPUT_NAME);
         saveChooser.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("Текстовый файл", "*.txt")
@@ -276,6 +291,8 @@ public class MainController {
 
         // 5. Успех
         DialogHelper.showInfo("Готово", "Файл сохранён: " + outputFile.getName());
+
+        SettingsManager.setOutputDir(outputFile.getParent());
 
         statusLabel.setText("Сохранено: " + outputFile.getName());
     }
@@ -716,6 +733,36 @@ public class MainController {
     private void onSortChanged() {
         applySort();
         log.info("Сортировка: {}", sortComboBox.getValue());
+    }
+
+    /**
+     * Открывает модальное окно настроек папок.
+     * Загружает settings-view.fxml, устанавливает владельца и копирует стили.
+     */
+    @FXML
+    private void onSettings() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/ru/vladify/vshum/filemerger/settings-view.fxml")
+            );
+            VBox root = loader.load();
+
+            Stage settingsStage = new Stage();
+            settingsStage.setTitle("Настройки");
+            settingsStage.initModality(Modality.APPLICATION_MODAL);
+            settingsStage.initOwner(fileListView.getScene().getWindow());
+            settingsStage.setResizable(false);
+
+            Scene scene = new Scene(root);
+            scene.getStylesheets().addAll(
+                    fileListView.getScene().getStylesheets()
+            );
+
+            settingsStage.setScene(scene);
+            settingsStage.showAndWait();
+        } catch (IOException e) {
+            log.error("Ошибка открытия настроек", e);
+        }
     }
 
     private void applySort() {

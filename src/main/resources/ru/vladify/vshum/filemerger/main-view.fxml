@@ -21,7 +21,7 @@
         <Label fx:id="titleLabel" styleClass="title-label" text="File Merger v1.2"/>
         <!-- Пружина — занимает всё свободное место -->
         <Region HBox.hgrow="ALWAYS"/>
-        <Button fx:id="aboutButton"
+        <Button fx:id="settingButton"
                 styleClass="icon-button"
                 onAction="#onAbout">
             <tooltip>
@@ -32,6 +32,21 @@
                            preserveRatio="true">
                     <image>
                         <Image url="@icons/info.png"/>
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Button fx:id="aboutButton"
+                styleClass="icon-button"
+                onAction="#onSettings">
+            <tooltip>
+                <Tooltip text="Настройки"/>
+            </tooltip>
+            <graphic>
+                <ImageView fitWidth="18" fitHeight="18"
+                           preserveRatio="true">
+                    <image>
+                        <Image url="@icons/gear.jpg"/>
                     </image>
                 </ImageView>
             </graphic>
