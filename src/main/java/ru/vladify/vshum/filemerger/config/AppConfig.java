@@ -1,5 +1,8 @@
 package ru.vladify.vshum.filemerger.config;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Центральная конфигурация приложения.
  * Содержит все константы — имя, версия, параметры склейки.
@@ -31,8 +34,34 @@ public class AppConfig {
 
     public static final String DEFAULT_PATH_TO_STYLE = "/ru/vladify/vshum/filemerger/style/";
 
+    public static final List<String> DEVELOPMENT_EXTENSIONS = Arrays.asList(        // JVM Languages
+            ".java", ".kt", ".kts", ".groovy", ".gradle", ".scala",
 
+            // Configuration & Data
+            ".xml", ".fxml", ".json", ".yaml", ".yml", ".toml",
+            ".properties", ".ini", ".conf", ".config",
 
+            // Web Frontend
+            ".html", ".htm", ".css", ".scss", ".sass", ".less",
+            ".js", ".jsx", ".ts", ".tsx", ".vue", ".svelte",
+
+            // Documentation & Text
+            ".md", ".markdown", ".txt", ".rst", ".adoc",
+
+            // Scripts
+            ".bat", ".cmd", ".sh", ".bash", ".ps1", ".py", ".rb",
+
+            // Database
+            ".sql",
+
+            // Build & Docker
+            ".dockerfile", ".makefile",
+
+            // Logs & Data
+            ".log", ".csv", ".tsv",
+
+            // Other
+            ".proto", ".graphql", ".gql");
 
     // Приватный конструктор — нельзя создать экземпляр
     private AppConfig() {}

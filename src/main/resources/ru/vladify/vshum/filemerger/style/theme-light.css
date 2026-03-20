@@ -125,3 +125,16 @@
 .hyperlink:hover {
     -fx-text-fill: #1565c0;
 }
+/* ===== Нейтральная кнопка ===== */
+.button-neutral {
+    -fx-background-color: #9e9e9e;
+    -fx-text-fill: white;
+}
+
+.button-neutral:hover {
+    -fx-background-color: #757575;
+}
+
+.button-neutral:pressed {
+    -fx-background-color: #616161;
+}

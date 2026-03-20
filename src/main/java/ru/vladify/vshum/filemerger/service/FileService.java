@@ -3,6 +3,7 @@ package ru.vladify.vshum.filemerger.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.vladify.vshum.filemerger.config.FileType;
+import ru.vladify.vshum.filemerger.config.SettingsManager;
 import ru.vladify.vshum.filemerger.model.FileInfo;
 
 import java.io.File;
@@ -11,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Сервис для работы с файлами — проверка расширений и рекурсивный сбор.
@@ -71,7 +73,14 @@ public class FileService {
 
     private boolean isAcceptable(File file) {
         if (file.isDirectory()) return false;
-        return FileType.isSupported(file.getName());
+        Set<String> enabledExtensions = SettingsManager.getEnabledExtensions();
+        String fileName = file.getName().toLowerCase();
+        for (String enabledExtension : enabledExtensions) {
+            if(fileName.endsWith(enabledExtension)){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

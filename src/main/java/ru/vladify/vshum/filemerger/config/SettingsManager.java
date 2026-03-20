@@ -1,6 +1,14 @@
 package ru.vladify.vshum.filemerger.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 /**
  * Класс для работы с настройками папок по умолчанию.
@@ -13,6 +21,7 @@ import java.util.prefs.Preferences;
  * Значения по умолчанию — домашняя директория пользователя.
  */
 public class SettingsManager {
+    private static final Logger log = LoggerFactory.getLogger(SettingsManager.class);
 
     private static final Preferences prefs =
             Preferences.userNodeForPackage(SettingsManager.class);
@@ -20,6 +29,8 @@ public class SettingsManager {
     private static final String KEY_INPUT_DIR = "inputDir";
     private static final String KEY_OUTPUT_DIR = "outputDir";
     private static final String DEFAULT_DIR = System.getProperty("user.home");
+    private static final String KEY_EXTENSIONS = "enableExt";
+    private static final String DEFAULT_CSV = String.join(",", AppConfig.DEVELOPMENT_EXTENSIONS);
 
     /**
      * Возвращает текущую сохранённую папку для выбора входных файлов.
@@ -58,6 +69,39 @@ public class SettingsManager {
     public static void setOutputDir(String path) {
         prefs.put(KEY_OUTPUT_DIR, path);
     }
+
+    /**
+     * Загружает список включённых расширений из настроек.
+     */
+    public static Set<String> getEnabledExtensions(){
+        String csv = prefs.get(KEY_EXTENSIONS, DEFAULT_CSV);
+        log.debug("Loaded extensions: {}", csv);
+
+        return Arrays.stream(csv.split(","))
+                .map(String::trim)
+                .map(String::toLowerCase)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    /**
+     * Сохраняет список включённых расширений в настройки.
+     */
+    public static void setEnabledExtensions(Set<String> extensions){
+        String csv = String.join(",", extensions);
+        log.info("Saving extensions: {}", csv);
+        prefs.put(KEY_EXTENSIONS, csv);
+        flush();
+    }
+
+    private static void flush() {
+        try {
+            prefs.flush();
+        } catch (BackingStoreException e) {
+            log.error("Failed to flush preferences", e);
+        }
+    }
+
 
     // Приватный конструктор, чтобы класс нельзя было инстанцировать
     private SettingsManager() {}

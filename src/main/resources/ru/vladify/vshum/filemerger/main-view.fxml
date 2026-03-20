@@ -21,7 +21,22 @@
         <Label fx:id="titleLabel" styleClass="title-label" text="File Merger v1.2"/>
         <!-- Пружина — занимает всё свободное место -->
         <Region HBox.hgrow="ALWAYS"/>
-        <Button fx:id="settingButton"
+        <Button fx:id="extensionsButton"
+                styleClass="icon-button"
+                onAction="#onConfigureExtensions">
+            <tooltip>
+                <Tooltip text="Выбор расширений файлов"/>
+            </tooltip>
+            <graphic>
+                <ImageView fitWidth="18" fitHeight="18"
+                           preserveRatio="true">
+                    <image>
+                        <Image url="@icons/extension.png"/>
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Button fx:id="aboutButton"
                 styleClass="icon-button"
                 onAction="#onAbout">
             <tooltip>
@@ -36,7 +51,7 @@
                 </ImageView>
             </graphic>
         </Button>
-        <Button fx:id="aboutButton"
+        <Button fx:id="settingButton"
                 styleClass="icon-button"
                 onAction="#onSettings">
             <tooltip>

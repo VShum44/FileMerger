@@ -7,6 +7,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -558,6 +559,37 @@ public class MainController {
             aboutStage.showAndWait();
         } catch (IOException e) {
             log.error("Ошибка открытия окна About", e);
+        }
+    }
+
+    @FXML
+    private void onConfigureExtensions() {
+        log.debug("onConfigureExtensions() called");
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/ru/vladify/vshum/filemerger/extensions-view.fxml")
+            );
+            VBox root = loader.load();
+
+            Stage dialog = new Stage();
+            dialog.setTitle("Настройка расширений");
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.setResizable(false);
+
+            Scene scene = new Scene(root);
+            // Наследуем стили из главного окна
+            scene.getStylesheets().addAll(
+                    fileListView.getScene().getStylesheets()
+            );
+
+            dialog.setScene(scene);
+            dialog.showAndWait();
+
+            log.info("Extensions dialog closed");
+
+        } catch (IOException e) {
+            log.error("Failed to open extensions dialog", e);
         }
     }
 

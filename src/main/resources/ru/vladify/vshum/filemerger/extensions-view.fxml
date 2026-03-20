@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="12" prefWidth="450" prefHeight="500"
+      xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="ru.vladify.vshum.filemerger.controller.ExtensionsController">
+
+    <padding>
+        <Insets top="16" right="16" bottom="16" left="16"/>
+    </padding>
+
+    <!-- Заголовок -->
+    <Label text="Выберите расширения файлов:" style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+
+    <!-- Список чекбоксов -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+        <FlowPane fx:id="checkBoxContainer" hgap="12" vgap="8">
+            <padding>
+                <Insets top="8" right="8" bottom="8" left="8"/>
+            </padding>
+        </FlowPane>
+    </ScrollPane>
+
+    <!-- Добавление пользовательского расширения -->
+    <HBox spacing="8" alignment="CENTER_LEFT">
+        <Label text="Добавить:"/>
+        <TextField fx:id="customExtField" promptText=".myext" prefWidth="150" HBox.hgrow="ALWAYS"/>
+        <Button text="Добавить" onAction="#onAddCustom"/>
+    </HBox>
+
+    <!-- Кнопки управления -->
+    <HBox spacing="8" alignment="CENTER_RIGHT">
+        <Button text="Выбрать все" onAction="#onSelectAll"/>
+        <Button text="Снять выбор" onAction="#onDeselectAll"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Отмена" onAction="#onCancel" styleClass="button-danger"/>
+        <Button text="OK" onAction="#onSave" styleClass="button-primary" prefWidth="70"/>
+    </HBox>
+
+</VBox>
