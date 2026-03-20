@@ -31,7 +31,7 @@
                 <ImageView fitWidth="18" fitHeight="18"
                            preserveRatio="true">
                     <image>
-                        <Image url="@icons/extension.png"/>
+                        <Image url="@icons/more.png"/>
                     </image>
                 </ImageView>
             </graphic>
