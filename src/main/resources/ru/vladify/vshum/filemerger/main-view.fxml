@@ -61,7 +61,7 @@
                 <ImageView fitWidth="18" fitHeight="18"
                            preserveRatio="true">
                     <image>
-                        <Image url="@icons/gear.jpg"/>
+                        <Image url="@icons/gear.png"/>
                     </image>
                 </ImageView>
             </graphic>
