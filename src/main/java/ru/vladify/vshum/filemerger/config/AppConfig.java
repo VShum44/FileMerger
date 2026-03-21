@@ -16,7 +16,7 @@ public class AppConfig {
 
     // ===== Склейка =====
     public static final String SEPARATOR = "=".repeat(50);
-    public static final String DEFAULT_OUTPUT_NAME = "merged_output.txt";
+    public static final String DEFAULT_OUTPUT_NAME = "merged_output";
 
     // ===== Размеры файлов =====
     public static final long BYTES_IN_KB = 1024;

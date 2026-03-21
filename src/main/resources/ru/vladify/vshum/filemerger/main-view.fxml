@@ -148,6 +148,12 @@
             </tooltip>
         </Button>
 
+        <ComboBox fx:id="formatComboBox">
+            <tooltip>
+                <Tooltip text="Формат экспорта"/>
+            </tooltip>
+        </ComboBox>
+
         <ComboBox fx:id="sortComboBox" onAction="#onSortChanged">
             <tooltip>
                 <Tooltip text="Сортировка списка"/>

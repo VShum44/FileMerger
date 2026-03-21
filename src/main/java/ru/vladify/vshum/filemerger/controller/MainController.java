@@ -7,7 +7,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -28,12 +27,14 @@ import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.vladify.vshum.filemerger.config.AppConfig;
+import ru.vladify.vshum.filemerger.config.MergeFormat;
 import ru.vladify.vshum.filemerger.config.SettingsManager;
 import ru.vladify.vshum.filemerger.config.SortOrder;
 import ru.vladify.vshum.filemerger.model.FileInfo;
 import ru.vladify.vshum.filemerger.service.FileMergerService;
 import ru.vladify.vshum.filemerger.service.FileService;
-import ru.vladify.vshum.filemerger.service.MergeService;
+import ru.vladify.vshum.filemerger.service.MarkdownMergeService;
+import ru.vladify.vshum.filemerger.service.interfaces.MergeService;
 import ru.vladify.vshum.filemerger.util.DialogHelper;
 import ru.vladify.vshum.filemerger.util.FileInfoCell;
 import ru.vladify.vshum.filemerger.util.ThemeManager;
@@ -53,6 +54,7 @@ import java.util.List;
 public class MainController {
 
     private static final Logger log = LoggerFactory.getLogger(MainController.class);
+    @FXML private ComboBox<MergeFormat> formatComboBox;
     @FXML
     private Label titleLabel;
     @FXML
@@ -107,6 +109,9 @@ public class MainController {
         // Настройка ComboBox сортировки
         sortComboBox.getItems().addAll(SortOrder.values());
         sortComboBox.setValue(SortOrder.MANUAL);
+
+        formatComboBox.getItems().addAll(MergeFormat.values());
+        formatComboBox.setValue(MergeFormat.TEXT);
 
         fileListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
@@ -249,10 +254,13 @@ public class MainController {
             return;
         }
 
+        MergeService mergeService = formatComboBox.getValue() == MergeFormat.MARKDOWN
+                ? new MarkdownMergeService()
+                : new FileMergerService();
         // 2. Склейка
         String mergedContent;
         try {
-            mergedContent = fileMergerService.merge(files);
+            mergedContent = mergeService.merge(files);
             log.info("Склейка завершена успешно");
         } catch (IOException e) {
             log.error("Ошибка чтения файла", e);
@@ -268,9 +276,9 @@ public class MainController {
             saveChooser.setInitialDirectory(outputDir);
         }
 
-        saveChooser.setInitialFileName(AppConfig.DEFAULT_OUTPUT_NAME);
+        saveChooser.setInitialFileName(AppConfig.DEFAULT_OUTPUT_NAME + mergeService.getFormat().getFileExtension());
         saveChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Текстовый файл", "*.txt")
+                new FileChooser.ExtensionFilter(mergeService.getFormat().getDisplayName(), "*" + mergeService.getFormat().getFileExtension())
         );
 
         Stage stage = (Stage) fileListView.getScene().getWindow();

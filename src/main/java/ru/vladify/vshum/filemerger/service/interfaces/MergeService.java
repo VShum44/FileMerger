@@ -1,5 +1,6 @@
-package ru.vladify.vshum.filemerger.service;
+package ru.vladify.vshum.filemerger.service.interfaces;
 
+import ru.vladify.vshum.filemerger.config.MergeFormat;
 import ru.vladify.vshum.filemerger.model.FileInfo;
 
 import java.io.IOException;
@@ -19,4 +20,13 @@ public interface MergeService {
      * @throws IOException если не удалось прочитать один из файлов
      */
     String merge(List<FileInfo> fileInfos) throws IOException;
+
+    /**
+     * Возвращает формат экспорта.
+     * Default-реализация для обратной совместимости.
+     */
+
+    default MergeFormat getFormat() {
+        return MergeFormat.TEXT;
+    }
 }

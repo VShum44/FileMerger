@@ -3,7 +3,9 @@ package ru.vladify.vshum.filemerger.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.vladify.vshum.filemerger.config.AppConfig;
+import ru.vladify.vshum.filemerger.config.MergeFormat;
 import ru.vladify.vshum.filemerger.model.FileInfo;
+import ru.vladify.vshum.filemerger.service.interfaces.MergeService;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -62,5 +64,10 @@ public class FileMergerService implements MergeService {
 
         log.info("Склейка завершена, результат: {} символов", sb.length());
         return sb.toString();
+    }
+
+    @Override
+    public MergeFormat getFormat() {
+        return MergeFormat.TEXT;
     }
 }
