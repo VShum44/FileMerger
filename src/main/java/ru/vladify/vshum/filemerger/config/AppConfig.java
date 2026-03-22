@@ -34,6 +34,15 @@ public class AppConfig {
 
     public static final String DEFAULT_PATH_TO_STYLE = "/ru/vladify/vshum/filemerger/style/";
 
+    public static final String FXML_BASE_PATH = "/ru/vladify/vshum/filemerger/";
+
+    public static final String TEXT_CHOOSE_FILES = "Выберите файлы";
+    public static final String TEXT_SOURCE_CODE = "Исходный код";
+    public static final String TEXT_ALL_FILES = "Все файлы";
+
+    public static final int STATUS_RESET_SECONDS = 2;
+
+
     public static final List<String> DEVELOPMENT_EXTENSIONS = Arrays.asList(        // JVM Languages
             ".java", ".kt", ".kts", ".groovy", ".gradle", ".scala",
 

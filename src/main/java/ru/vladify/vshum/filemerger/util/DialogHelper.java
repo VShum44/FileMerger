@@ -3,8 +3,6 @@ package ru.vladify.vshum.filemerger.util;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
-import java.util.Optional;
-
 /**
  * Утилита для показа диалоговых окон.
  * Все методы статические — создание экземпляра не требуется.

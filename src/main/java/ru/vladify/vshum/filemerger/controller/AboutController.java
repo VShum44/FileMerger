@@ -19,8 +19,8 @@ import java.net.URI;
 public class AboutController {
 
     private static final Logger log = LoggerFactory.getLogger(AboutController.class);
-    public Label appNameLabel;
-    public Label versionLabel;
+    @FXML private Label appNameLabel;
+    @FXML private Label versionLabel;
 
     @FXML
     private Button closeButton;

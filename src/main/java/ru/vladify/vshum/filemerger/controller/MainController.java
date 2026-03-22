@@ -39,13 +39,14 @@ import ru.vladify.vshum.filemerger.util.DialogHelper;
 import ru.vladify.vshum.filemerger.util.FileInfoCell;
 import ru.vladify.vshum.filemerger.util.ThemeManager;
 
-import java.awt.Desktop;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.MalformedInputException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Главный контроллер приложения File Merger.
@@ -87,10 +88,12 @@ public class MainController {
 
     private final ObservableList<FileInfo> files = FXCollections.observableArrayList();
     private final FilteredList<FileInfo> filteredFiles = new FilteredList<>(files, f -> true);
-
-    private final MergeService fileMergerService = new FileMergerService();
     private final FileService fileService = new FileService();
-    private ThemeManager themeManager = new ThemeManager();
+    private final ThemeManager themeManager = new ThemeManager();
+    private final Map<MergeFormat, MergeService> mergeServices = Map.of(
+            MergeFormat.TEXT, new FileMergerService(),
+            MergeFormat.MARKDOWN, new MarkdownMergeService()
+    );
 
     /**
      * Инициализация контроллера — настройка ListView, фильтрации,
@@ -115,10 +118,10 @@ public class MainController {
 
         fileListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
+        setupContextMenu();
+        setupBindings();
+        setupListeners();
         Platform.runLater(this::setupHotkeys);
-        Platform.runLater(this::setupContextMenu);
-        Platform.runLater(this::setupBindings);
-        Platform.runLater(this::setupListeners);
 
         updateStatus();
 
@@ -185,21 +188,17 @@ public class MainController {
     @FXML
     private void onAddFiles() {
         log.debug("Открытие диалога добавления файлов");
+        List<String> patterns = SettingsManager.getEnabledExtensions().stream().map(ex -> "*" + ex).toList();
 
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Выберите файлы");
+        fileChooser.setTitle(AppConfig.TEXT_CHOOSE_FILES);
         File inputDir = new File(SettingsManager.getInputDir());
         if (inputDir.exists() && inputDir.isDirectory()) {
             fileChooser.setInitialDirectory(inputDir);
         }
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter(
-                        "Исходный код",
-                        "*.java", "*.gradle", "*.xml", "*.kt",
-                        "*.json", "*.yaml", "*.yml", "*.properties",
-                        "*.txt", "*.html", "*.js"
-                ),
-                new FileChooser.ExtensionFilter("Все файлы", "*.*")
+                new FileChooser.ExtensionFilter(AppConfig.TEXT_SOURCE_CODE, patterns),
+                new FileChooser.ExtensionFilter(AppConfig.TEXT_ALL_FILES, "*.*")
         );
 
         Stage stage = (Stage) fileListView.getScene().getWindow();
@@ -254,9 +253,7 @@ public class MainController {
             return;
         }
 
-        MergeService mergeService = formatComboBox.getValue() == MergeFormat.MARKDOWN
-                ? new MarkdownMergeService()
-                : new FileMergerService();
+        MergeService mergeService = mergeServices.get(formatComboBox.getValue());
         // 2. Склейка
         String mergedContent;
         try {
@@ -544,15 +541,19 @@ public class MainController {
      */
     @FXML
     private void onAbout() {
+        openModalWindow("about-view.fxml", "О программе");
+    }
+
+    private void openModalWindow(String fileName, String title) {
         try {
 
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/ru/vladify/vshum/filemerger/about-view.fxml")
+                    getClass().getResource(AppConfig.FXML_BASE_PATH + fileName)
             );
             VBox root = loader.load();
 
             Stage aboutStage = new Stage();
-            aboutStage.setTitle("О программе");
+            aboutStage.setTitle(title);
             aboutStage.initModality(Modality.APPLICATION_MODAL);
             aboutStage.initOwner(fileListView.getScene().getWindow());
             aboutStage.setResizable(false);
@@ -566,39 +567,14 @@ public class MainController {
             aboutStage.setScene(scene);
             aboutStage.showAndWait();
         } catch (IOException e) {
-            log.error("Ошибка открытия окна About", e);
+            log.error("Ошибка открытия окна модального окна {}", fileName, e);
         }
     }
 
     @FXML
     private void onConfigureExtensions() {
         log.debug("onConfigureExtensions() called");
-
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/ru/vladify/vshum/filemerger/extensions-view.fxml")
-            );
-            VBox root = loader.load();
-
-            Stage dialog = new Stage();
-            dialog.setTitle("Настройка расширений");
-            dialog.initModality(Modality.APPLICATION_MODAL);
-            dialog.setResizable(false);
-
-            Scene scene = new Scene(root);
-            // Наследуем стили из главного окна
-            scene.getStylesheets().addAll(
-                    fileListView.getScene().getStylesheets()
-            );
-
-            dialog.setScene(scene);
-            dialog.showAndWait();
-
-            log.info("Extensions dialog closed");
-
-        } catch (IOException e) {
-            log.error("Failed to open extensions dialog", e);
-        }
+        openModalWindow("extensions-view.fxml","Настройка расширений");
     }
 
     /**
@@ -781,28 +757,7 @@ public class MainController {
      */
     @FXML
     private void onSettings() {
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/ru/vladify/vshum/filemerger/settings-view.fxml")
-            );
-            VBox root = loader.load();
-
-            Stage settingsStage = new Stage();
-            settingsStage.setTitle("Настройки");
-            settingsStage.initModality(Modality.APPLICATION_MODAL);
-            settingsStage.initOwner(fileListView.getScene().getWindow());
-            settingsStage.setResizable(false);
-
-            Scene scene = new Scene(root);
-            scene.getStylesheets().addAll(
-                    fileListView.getScene().getStylesheets()
-            );
-
-            settingsStage.setScene(scene);
-            settingsStage.showAndWait();
-        } catch (IOException e) {
-            log.error("Ошибка открытия настроек", e);
-        }
+        openModalWindow("settings-view.fxml", "Настройки");
     }
 
     private void applySort() {
@@ -821,7 +776,7 @@ public class MainController {
     private void showTemporaryStatus(String message) {
         statusLabel.setText(message);
 
-        PauseTransition pause = new PauseTransition(Duration.seconds(2));
+        PauseTransition pause = new PauseTransition(Duration.seconds(AppConfig.STATUS_RESET_SECONDS));
         pause.setOnFinished(e -> updateStatus());
         pause.play();
     }

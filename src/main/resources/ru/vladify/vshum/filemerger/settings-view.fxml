@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
 <!-- settings-view.fxml -->
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <VBox spacing="16" prefWidth="450" prefHeight="200"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="ru.vladify.vshum.filemerger.controller.SettingsController">

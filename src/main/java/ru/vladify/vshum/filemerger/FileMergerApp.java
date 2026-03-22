@@ -1,11 +1,9 @@
 package ru.vladify.vshum.filemerger;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import ru.vladify.vshum.filemerger.config.AppConfig;
 import ru.vladify.vshum.filemerger.config.MainWindow;
 import ru.vladify.vshum.filemerger.controller.MainController;
@@ -39,8 +37,8 @@ public class FileMergerApp extends Application {
             throw new RuntimeException("Проблема загрузки сцены");
         }
         // Подключаем CSS
-        scene.getStylesheets().add(getClass().getResource("style/style.css").toExternalForm());
-        scene.getStylesheets().add(getClass().getResource("style/theme-light.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource(AppConfig.DEFAULT_PATH_TO_STYLE + "style.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource(AppConfig.DEFAULT_PATH_TO_STYLE + "theme-light.css").toExternalForm());
 
         // Восстанавливаем положение и размер окна
         MainWindow mainWindow = getDefaultMainWindowSize();
@@ -85,11 +83,11 @@ public class FileMergerApp extends Application {
     }
 
     private MainWindow getDefaultMainWindowSize() {
-        double x = prefs.getDouble("window_x", 100);
-        double y = prefs.getDouble("window_y", 100);
-        double width = prefs.getDouble("window_width", 800);
-        double height = prefs.getDouble("window_height", 600);
-        MainWindow mainWindow = new MainWindow(x, y, width, height);
-        return mainWindow;
+        return new MainWindow(
+                prefs.getDouble("window_x", 100),
+                prefs.getDouble("window_y", 100),
+                prefs.getDouble("window_width", 800),
+                prefs.getDouble("window_height", 600)
+        );
     }
 }
