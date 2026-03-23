@@ -92,7 +92,8 @@
                 </placeholder>
             </ListView>
 
-            <TextArea fx:id="previewArea" editable="false"
+            <TextArea fx:id="previewArea" id="previewArea"
+                      editable="false"
                       promptText="Выберите файл для предпросмотра..."
                       wrapText="true"/>
         </SplitPane>
@@ -130,12 +131,14 @@
             <Region HBox.hgrow="ALWAYS"/>
 
             <ComboBox fx:id="sortComboBox" onAction="#onSortChanged"
-                      minWidth="150" prefWidth="150">
+                      minWidth="150" prefWidth="150"
+                      minHeight="36" prefHeight="36" maxHeight="36">
                 <tooltip><Tooltip text="Сортировка списка"/></tooltip>
             </ComboBox>
 
             <ComboBox fx:id="formatComboBox"
-                      minWidth="150" prefWidth="150">
+                      minWidth="150" prefWidth="150"
+                      minHeight="36" prefHeight="36" maxHeight="36">
                 <tooltip><Tooltip text="Формат экспорта"/></tooltip>
             </ComboBox>
 

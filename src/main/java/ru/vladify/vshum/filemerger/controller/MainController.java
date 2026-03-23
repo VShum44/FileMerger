@@ -9,6 +9,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
@@ -121,7 +122,9 @@ public class MainController {
         setupContextMenu();
         setupBindings();
         setupListeners();
-        Platform.runLater(this::setupHotkeys);
+        Platform.runLater(() -> {
+            setupHotkeys();
+        });
 
         updateStatus();
 

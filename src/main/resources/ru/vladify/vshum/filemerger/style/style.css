@@ -69,11 +69,31 @@
     -fx-border-width: 2;
 }
 
-/* ===== Список файлов ===== */
-.list-view {
+/* ===== SplitPane — ВЕСЬ БЛОК как карточка ===== */
+.split-pane {
     -fx-background-radius: 10;
-    -fx-border-radius: 10;
+    -fx-border-radius: 0;
     -fx-border-width: 1;
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+}
+
+/* Divider — ровная полоса от края до края */
+.split-pane-divider {
+    -fx-padding: 0 2;
+    -fx-background-insets: 0;
+}
+
+.split-pane > .split-pane-divider {
+    -fx-padding: 0 2;
+    -fx-background-insets: 0;
+}
+
+/* ===== Список файлов (ВНУТРИ SplitPane — без скруглений) ===== */
+.list-view {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-width: 0;
     -fx-padding: 4;
     -fx-background-insets: 0;
 }
@@ -104,16 +124,17 @@
     -fx-opacity: 0.7;
 }
 
-/* ===== TextArea превью ===== */
+/* ===== TextArea (ВНУТРИ SplitPane — без скруглений) ===== */
 .text-area {
-    -fx-background-radius: 10;
-    -fx-border-radius: 10;
-    -fx-border-width: 1;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-width: 0;
+    -fx-background-insets: 0;
     -fx-font-family: "JetBrains Mono", "Cascadia Code", "Fira Code", "Consolas", monospace;
     -fx-font-size: 12.5px;
 }
 
-/* ===== Кнопки (общий базовый стиль) ===== */
+/* ===== Кнопки ===== */
 .button {
     -fx-font-size: 13px;
     -fx-font-weight: bold;
@@ -130,7 +151,6 @@
     -fx-scale-y: 0.97;
 }
 
-/* Стили кнопок по типам (форма) */
 .button-default {
     -fx-min-width: 100;
 }
@@ -155,17 +175,36 @@
     -fx-border-width: 1;
     -fx-padding: 6 12;
     -fx-cursor: hand;
-    -fx-font-size: 12.5px;
+    -fx-font-size: 11.5px;
+    -fx-min-height: 36;
+    -fx-pref-height: 36;
+    -fx-max-height: 36;
+    -fx-padding: 0 0 0 12;
 }
 
-/* ===== SplitPane ===== */
-.modern-split {
-    -fx-padding: 0;
+.combo-box:focused {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
 }
 
-.modern-split > .split-pane-divider {
-    -fx-padding: 0 3;
-    -fx-background-color: transparent;
+/* Ячейка с текстом внутри ComboBox — прижимаем текст влево */
+.combo-box .list-cell {
+    -fx-padding: 0 0 0 0;
+}
+
+.combo-box .cell {
+    -fx-padding: 0 0 0 0;
+}
+
+/* Стрелка — скруглённые углы справа, совпадают с родителем */
+.combo-box .arrow-button {
+    -fx-padding: 0 10 0 8;
+    -fx-background-radius: 0 10 10 0;   /* скругление ТОЛЬКО справа */
+    -fx-background-insets: 0;
+}
+
+.combo-box .arrow-button .arrow {
+    -fx-padding: 3 4 3 4;
 }
 
 /* ===== Панель действий ===== */
@@ -219,7 +258,7 @@
     -fx-padding: 6 12;
 }
 
-/* ===== ScrollBar (минимализм) ===== */
+/* ===== ScrollBar ===== */
 .scroll-bar .thumb {
     -fx-background-radius: 6;
 }

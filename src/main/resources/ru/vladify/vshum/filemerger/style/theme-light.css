@@ -45,10 +45,24 @@
     -fx-prompt-text-fill: #9ca3af;
 }
 
+/* ===== SplitPane — карточка ===== */
+.split-pane {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e8eaed;
+}
+
+.split-pane-divider {
+    -fx-background-color: #e8eaed;
+}
+
+.split-pane > .split-pane-divider {
+    -fx-background-color: #e8eaed;
+    -fx-background-insets: 0;
+}
+
 /* ===== Список файлов ===== */
 .list-view {
     -fx-background-color: #ffffff;
-    -fx-border-color: #e8eaed;
 }
 
 .list-cell {
@@ -83,7 +97,6 @@
     -fx-control-inner-background: #ffffff;
     -fx-background-color: #ffffff;
     -fx-text-fill: #374151;
-    -fx-border-color: #e8eaed;
     -fx-prompt-text-fill: #9ca3af;
 }
 
@@ -99,21 +112,7 @@
     -fx-background-color: #ffffff;
 }
 
-/* ===== SplitPane ===== */
-.split-pane {
-    -fx-background-color: #fafbfc;
-}
-
-.split-pane-divider {
-    -fx-background-color: #e8eaed;
-}
-
-.split-pane > .split-pane-divider {
-    -fx-background-color: #e8eaed;
-    -fx-background-insets: 0;
-}
-
-/* ===== Кнопки (общая база) ===== */
+/* ===== Кнопки ===== */
 .button {
     -fx-background-color: #f1f5f9;
     -fx-text-fill: #334155;
@@ -129,14 +128,12 @@
     -fx-background-color: #cbd5e1;
 }
 
-/* Иконки — перебиваем */
 .icon-button {
     -fx-background-color: transparent;
     -fx-border-width: 0;
     -fx-border-color: transparent;
 }
 
-/* ===== Default ===== */
 .button.button-default {
     -fx-background-color: #f1f5f9;
     -fx-text-fill: #334155;
@@ -152,7 +149,6 @@
     -fx-background-color: #cbd5e1;
 }
 
-/* ===== Subtle ===== */
 .button.button-subtle {
     -fx-background-color: #f1f5f9;
     -fx-text-fill: #64748b;
@@ -164,7 +160,6 @@
     -fx-background-color: #e2e8f0;
 }
 
-/* ===== Danger ===== */
 .button.button-danger {
     -fx-background-color: #ef4444;
     -fx-text-fill: #ffffff;
@@ -180,7 +175,6 @@
     -fx-background-color: #b91c1c;
 }
 
-/* ===== Danger Outline ===== */
 .button.button-danger-outline {
     -fx-background-color: transparent;
     -fx-text-fill: #ef4444;
@@ -193,7 +187,6 @@
     -fx-border-color: #ef4444;
 }
 
-/* ===== Primary ===== */
 .button.button-primary {
     -fx-background-color: linear-gradient(to bottom, #3b82f6, #2563eb);
     -fx-text-fill: #ffffff;
@@ -212,7 +205,6 @@
     -fx-effect: none;
 }
 
-/* ===== Neutral ===== */
 .button.button-neutral {
     -fx-background-color: #94a3b8;
     -fx-text-fill: white;
@@ -228,4 +220,155 @@
     -fx-background-color: #475569;
 }
 
-/*
+/* ===== ComboBox ===== */
+.combo-box {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dde1e6;
+}
+
+.combo-box:focused {
+    -fx-border-color: #3b82f6;
+    -fx-background-color: #ffffff;
+}
+
+.combo-box:hover {
+    -fx-border-color: #3b82f6;
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: #ffffff;
+}
+
+.combo-box .arrow-button .arrow {
+    -fx-background-color: #64748b;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #374151;
+}
+
+.combo-box .cell {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #374151;
+}
+
+/* ComboBox popup */
+.combo-box-popup .list-view {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e8eaed;
+    -fx-background-insets: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 10, 0, 0, 4);
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #374151;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #f0f7ff;
+}
+
+.combo-box-popup .list-view .list-cell:selected {
+    -fx-background-color: transparent;
+    -fx-text-fill: #2563eb;
+    -fx-font-weight: bold;
+}
+
+.combo-box-popup .list-view .list-cell:selected:hover {
+    -fx-background-color: #f0f7ff;
+    -fx-text-fill: #2563eb;
+}
+
+/* ===== Статус-бар ===== */
+.status-bar {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e8eaed;
+}
+
+.status-text {
+    -fx-text-fill: #9ca3af;
+}
+
+#statusLabel {
+    -fx-text-fill: #9ca3af;
+}
+
+/* ===== Label ===== */
+.label {
+    -fx-text-fill: #374151;
+}
+
+/* ===== Drag & Drop ===== */
+.drag-over {
+    -fx-border-color: #3b82f6;
+    -fx-background-color: rgba(59, 130, 246, 0.04);
+}
+
+/* ===== ProgressBar ===== */
+.modern-progress {
+    -fx-accent: #3b82f6;
+    -fx-control-inner-background: #e8eaed;
+}
+
+#progressBar {
+    -fx-accent: #3b82f6;
+    -fx-control-inner-background: #e8eaed;
+}
+
+/* ===== Tooltip ===== */
+.tooltip {
+    -fx-background-color: #1e293b;
+    -fx-text-fill: #f8fafc;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 4);
+}
+
+/* ===== ScrollBar ===== */
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .track {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #cbd5e1;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #94a3b8;
+}
+
+/* ===== Hyperlink ===== */
+.hyperlink {
+    -fx-text-fill: #2563eb;
+}
+
+.hyperlink:hover {
+    -fx-text-fill: #1d4ed8;
+}
+
+.hyperlink:visited {
+    -fx-text-fill: #2563eb;
+}
+
+/* ===== Placeholder ===== */
+.placeholder-text {
+    -fx-text-fill: #6b7280;
+}
+
+.placeholder-hint {
+    -fx-text-fill: #9ca3af;
+}
+
+.list-view .placeholder {
+    -fx-background-color: #ffffff;
+}
+
+.list-view .placeholder .label {
+    -fx-text-fill: #9ca3af;
+}
