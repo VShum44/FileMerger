@@ -1,165 +1,157 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- Корневой контейнер -->
-<!-- fx:controller — указываем какой класс управляет этим окном -->
-
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
-<VBox prefHeight="750" prefWidth="1100" spacing="10" xmlns="http://javafx.com/javafx/17.0.12"
-      xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.vladify.vshum.filemerger.controller.MainController">
 
-    <padding>
-        <Insets bottom="15" left="15" right="15" top="15"/>
-    </padding>
+<VBox prefHeight="750" prefWidth="1100" spacing="0" styleClass="app-root"
+      xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ru.vladify.vshum.filemerger.controller.MainController">
 
-    <HBox spacing="8.0">
-        <!--  Заголовок -->
-        <Label fx:id="titleLabel" styleClass="title-label" text="File Merger v1.2"/>
-        <!-- Пружина — занимает всё свободное место -->
+    <!-- ===== Header ===== -->
+    <HBox styleClass="header-bar" alignment="CENTER_LEFT" spacing="12">
+        <padding>
+            <Insets bottom="12" left="20" right="20" top="12"/>
+        </padding>
+
+        <Label fx:id="titleLabel" styleClass="title-label" text="File Merger v2.0"/>
+        <Label styleClass="version-badge" text="v2.0"/>
+
         <Region HBox.hgrow="ALWAYS"/>
-        <Button fx:id="extensionsButton"
-                styleClass="icon-button"
-                onAction="#onConfigureExtensions">
-            <tooltip>
-                <Tooltip text="Выбор расширений файлов"/>
-            </tooltip>
+
+        <Button fx:id="extensionsButton" styleClass="icon-button" onAction="#onConfigureExtensions">
+            <tooltip><Tooltip text="Выбор расширений файлов"/></tooltip>
             <graphic>
-                <ImageView fitWidth="18" fitHeight="18"
-                           preserveRatio="true">
-                    <image>
-                        <Image url="@icons/more.png"/>
-                    </image>
+                <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                    <image><Image url="@icons/more.png"/></image>
                 </ImageView>
             </graphic>
         </Button>
-        <Button fx:id="aboutButton"
-                styleClass="icon-button"
-                onAction="#onAbout">
-            <tooltip>
-                <Tooltip text="О программе"/>
-            </tooltip>
+
+        <Button fx:id="aboutButton" styleClass="icon-button" onAction="#onAbout">
+            <tooltip><Tooltip text="О программе"/></tooltip>
             <graphic>
-                <ImageView fitWidth="18" fitHeight="18"
-                           preserveRatio="true">
-                    <image>
-                        <Image url="@icons/info.png"/>
-                    </image>
+                <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                    <image><Image url="@icons/info.png"/></image>
                 </ImageView>
             </graphic>
         </Button>
-        <Button fx:id="settingButton"
-                styleClass="icon-button"
-                onAction="#onSettings">
-            <tooltip>
-                <Tooltip text="Настройки"/>
-            </tooltip>
+
+        <Button fx:id="settingButton" styleClass="icon-button" onAction="#onSettings">
+            <tooltip><Tooltip text="Настройки"/></tooltip>
             <graphic>
-                <ImageView fitWidth="18" fitHeight="18"
-                           preserveRatio="true">
-                    <image>
-                        <Image url="@icons/gear.png"/>
-                    </image>
+                <ImageView fitWidth="20" fitHeight="20" preserveRatio="true">
+                    <image><Image url="@icons/gear.png"/></image>
                 </ImageView>
             </graphic>
         </Button>
-        <!-- Кнопка темы прижата вправо -->
-        <Button fx:id="themeButton"
-                onAction="#onToggleTheme"
-                styleClass="icon-button">
-            <tooltip>
-                <Tooltip text="Переключить тему"/>
-            </tooltip>
+
+        <Separator orientation="VERTICAL" styleClass="header-separator"/>
+
+        <Button fx:id="themeButton" onAction="#onToggleTheme" styleClass="icon-button">
+            <tooltip><Tooltip text="Переключить тему"/></tooltip>
             <graphic>
-                <ImageView fx:id="themeIcon" fitWidth="18" fitHeight="18"
-                           preserveRatio="true"/>
+                <ImageView fx:id="themeIcon" fitWidth="20" fitHeight="20" preserveRatio="true"/>
             </graphic>
         </Button>
     </HBox>
 
-    <VBox spacing="8">
-        <HBox spacing="8" alignment="CENTER_LEFT">
-            <!-- Поиск растягивается -->
-            <TextField fx:id="searchField" promptText="Поиск по названию..." HBox.hgrow="ALWAYS"/>
+    <!-- ===== Основной контент ===== -->
+    <VBox spacing="12" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets bottom="16" left="20" right="20" top="12"/>
+        </padding>
 
-            <!-- ProgressBar той же высоты, прижат вправо -->
-            <ProgressBar fx:id="progressBar"
-                         prefWidth="200.0"
-                         prefHeight="28.0"
-                         progress="0.0"
-                         visible="false"
-                         maxHeight="Infinity"/>
+        <!-- Поиск + прогресс -->
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <TextField fx:id="searchField" promptText="🔍  Поиск по названию..."
+                       styleClass="search-field" HBox.hgrow="ALWAYS"/>
+            <ProgressBar fx:id="progressBar" prefWidth="220" prefHeight="36"
+                         progress="0.0" visible="false" styleClass="modern-progress"/>
+        </HBox>
+
+        <!-- Список + превью -->
+        <SplitPane fx:id="mainSplitPane" dividerPositions="0.65"
+                   styleClass="modern-split" VBox.vgrow="ALWAYS">
+
+            <ListView fx:id="fileListView"
+                      onDragDropped="#onDragDropped"
+                      onDragEntered="#onDragEntered"
+                      onDragExited="#onDragExited"
+                      onDragOver="#onDragOver"
+                      VBox.vgrow="ALWAYS">
+                <placeholder>
+                    <VBox alignment="CENTER" spacing="8" styleClass="placeholder-box">
+                        <Label styleClass="placeholder-icon" text="📂"/>
+                        <Label styleClass="placeholder-text" text="Перетащите файлы сюда"/>
+                        <Label styleClass="placeholder-hint" text="или нажмите «Добавить»"/>
+                    </VBox>
+                </placeholder>
+            </ListView>
+
+            <TextArea fx:id="previewArea" editable="false"
+                      promptText="Выберите файл для предпросмотра..."
+                      wrapText="true"/>
+        </SplitPane>
+
+        <!-- Панель действий -->
+        <HBox spacing="8" alignment="CENTER_LEFT" styleClass="action-bar">
+
+            <Button onAction="#onAddFiles" styleClass="button-default"
+                    text="Добавить" minWidth="120" prefWidth="140">
+                <tooltip><Tooltip text="Добавить файлы (Ctrl+O)"/></tooltip>
+            </Button>
+
+            <Button onAction="#onMoveUp" styleClass="button-subtle"
+                    text="▲" minWidth="44" prefWidth="44">
+                <tooltip><Tooltip text="Переместить вверх"/></tooltip>
+            </Button>
+
+            <Button onAction="#onMoveDown" styleClass="button-subtle"
+                    text="▼" minWidth="44" prefWidth="44">
+                <tooltip><Tooltip text="Переместить вниз"/></tooltip>
+            </Button>
+
+            <Region prefWidth="8"/>
+
+            <Button fx:id="removeButton" onAction="#onRemove"
+                    styleClass="button-danger" text="Удалить" minWidth="95">
+                <tooltip><Tooltip text="Удалить выбранные (Delete). Ctrl+Click — выбрать несколько"/></tooltip>
+            </Button>
+
+            <Button onAction="#onClear"
+                    styleClass="button-danger-outline" text="Очистить" minWidth="105">
+                <tooltip><Tooltip text="Очистить список"/></tooltip>
+            </Button>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <ComboBox fx:id="sortComboBox" onAction="#onSortChanged"
+                      minWidth="150" prefWidth="150">
+                <tooltip><Tooltip text="Сортировка списка"/></tooltip>
+            </ComboBox>
+
+            <ComboBox fx:id="formatComboBox"
+                      minWidth="150" prefWidth="150">
+                <tooltip><Tooltip text="Формат экспорта"/></tooltip>
+            </ComboBox>
+
+            <Button fx:id="mergeButton" onAction="#onMerge"
+                    styleClass="button-primary" text="⚡ Склеить" minWidth="130">
+                <tooltip><Tooltip text="Склеить и сохранить (Ctrl+S)"/></tooltip>
+            </Button>
         </HBox>
     </VBox>
 
-        <SplitPane dividerPositions="0.7" VBox.vgrow="ALWAYS">
-            <!--  Место для списка файлов -->
-            <ListView fx:id="fileListView" onDragDropped="#onDragDropped" onDragEntered="#onDragEntered"
-                      onDragExited="#onDragExited" onDragOver="#onDragOver" VBox.vgrow="ALWAYS">
-                <placeholder>
-                    <Label text="Перетащите файлы сюда или нажмите 'Добавить'"/>
-                </placeholder>
-            </ListView>
-            <!--  Место для просмотра содержимого файлов -->
-            <TextArea fx:id="previewArea" editable="false" promptText="Выберите элемент" wrapText="true"/>
-        </SplitPane>
-
-    <!-- 3. Кнопки -->
-    <HBox spacing="8">
-        <Button onAction="#onAddFiles" text="Добавить">
-            <tooltip>
-                <Tooltip text="Добавить файлы (Ctrl+O)"/>
-            </tooltip>
-        </Button>
-
-        <Button onAction="#onMoveUp" text="▲">
-            <tooltip>
-                <Tooltip text="Переместить вверх"/>
-            </tooltip>
-        </Button>
-
-        <Button onAction="#onMoveDown" text="▼">
-            <tooltip>
-                <Tooltip text="Переместить вниз"/>
-            </tooltip>
-        </Button>
-
-        <Button fx:id="removeButton" onAction="#onRemove" styleClass="button-danger" text="Удалить">
-            <tooltip>
-                <Tooltip text="Удалить выбранные (Delete). Ctrl+Click — выбрать несколько"/>
-            </tooltip>
-        </Button>
-
-        <Button onAction="#onClear" styleClass="button-danger" text="Очистить">
-            <tooltip>
-                <Tooltip text="Очистить список"/>
-            </tooltip>
-        </Button>
-
-        <Button fx:id="mergeButton" onAction="#onMerge" styleClass="button-primary" text="Склеить">
-            <tooltip>
-                <Tooltip text="Склеить и сохранить (Ctrl+S)"/>
-            </tooltip>
-        </Button>
-
-        <ComboBox fx:id="formatComboBox">
-            <tooltip>
-                <Tooltip text="Формат экспорта"/>
-            </tooltip>
-        </ComboBox>
-
-        <ComboBox fx:id="sortComboBox" onAction="#onSortChanged">
-            <tooltip>
-                <Tooltip text="Сортировка списка"/>
-            </tooltip>
-        </ComboBox>
+    <!-- ===== Статус-бар ===== -->
+    <HBox styleClass="status-bar" alignment="CENTER_LEFT">
+        <padding>
+            <Insets bottom="8" left="20" right="20" top="8"/>
+        </padding>
+        <Label fx:id="statusLabel" styleClass="status-text" text="Готов к работе"/>
     </HBox>
-
-    <!-- 4. Статус внизу -->
-    <Label fx:id="statusLabel" text="Статус: готов"/>
-
 
 </VBox>

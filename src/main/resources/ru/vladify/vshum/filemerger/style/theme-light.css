@@ -1,140 +1,231 @@
-/* ===== Общие ===== */
+/* ======================================
+   File Merger — Light Theme
+   ====================================== */
+
+/* ===== Фон ===== */
 .root {
-    -fx-background-color: #f5f5f5;
+    -fx-background-color: #fafbfc;
+    -fx-control-inner-background: #ffffff;
 }
 
-/* ===== Заголовок ===== */
+/* ===== Header ===== */
+.header-bar {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e8eaed;
+}
+
 .title-label {
-    -fx-text-fill: #333333;
+    -fx-text-fill: #1a1a2e;
+}
+
+.version-badge {
+    -fx-background-color: #e3f2fd;
+    -fx-text-fill: #1565c0;
+}
+
+/* ===== Поле поиска ===== */
+.search-field {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dde1e6;
+    -fx-text-fill: #1a1a2e;
+    -fx-prompt-text-fill: #9ca3af;
+}
+
+.search-field:focused {
+    -fx-border-color: #3b82f6;
+    -fx-effect: dropshadow(gaussian, rgba(59,130,246,0.15), 8, 0, 0, 0);
+}
+
+/* ===== TextField ===== */
+.text-field {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #374151;
+    -fx-border-color: #dde1e6;
+    -fx-border-radius: 10;
+    -fx-prompt-text-fill: #9ca3af;
 }
 
 /* ===== Список файлов ===== */
 .list-view {
-    -fx-background-color: white;
-    -fx-border-color: #cccccc;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e8eaed;
 }
 
 .list-cell {
-    -fx-background-color: white;
-    -fx-text-fill: #333333;
+    -fx-background-color: transparent;
+    -fx-text-fill: #374151;
 }
 
-.list-cell:hover {
-    -fx-background-color: #e8f5e9;
-}
-
-.list-cell:selected {
-    -fx-background-color: #4CAF50;
-    -fx-text-fill: white;
-}
-
-.list-cell:selected:unfocused {
-    -fx-background-color: #81C784;
-    -fx-text-fill: white;
-}
-
-/* ===== TextArea (превью) ===== */
-.text-area {
-    -fx-control-inner-background: white;
-    -fx-text-fill: #333333;
-    -fx-border-color: #cccccc;
-}
-
-/* ===== Кнопки ===== */
-.button {
-    -fx-background-color: #4CAF50;
-    -fx-text-fill: white;
-}
-
-.button:hover {
-    -fx-background-color: #45a049;
-}
-
-.button:pressed {
-    -fx-background-color: #388E3C;
-}
-
-/* Иконки без фона — перебиваем стиль .button */
-.icon-button {
+.list-cell:empty {
     -fx-background-color: transparent;
 }
 
-.button-danger {
-    -fx-background-color: #f44336;
+.list-cell:hover {
+    -fx-background-color: #f0f7ff;
 }
 
-.button-danger:hover {
-    -fx-background-color: #e53935;
+.list-cell:selected {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: #ffffff;
 }
 
-.button-primary {
-    -fx-background-color: #2196F3;
+.list-cell:selected:hover {
+    -fx-background-color: #2563eb;
 }
 
-.button-primary:hover {
-    -fx-background-color: #1e88e5;
+.list-cell:selected:unfocused {
+    -fx-background-color: #93bbfd;
+    -fx-text-fill: #ffffff;
 }
 
-/* ===== Статус ===== */
-#statusLabel {
-    -fx-text-fill: #888888;
+/* ===== TextArea ===== */
+.text-area {
+    -fx-control-inner-background: #ffffff;
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #374151;
+    -fx-border-color: #e8eaed;
+    -fx-prompt-text-fill: #9ca3af;
 }
 
-/* ===== Drag & Drop ===== */
-.drag-over {
-    -fx-border-color: #4CAF50;
+.text-area .content {
+    -fx-background-color: #ffffff;
 }
 
-/* ===== ComboBox ===== */
-.combo-box {
-    -fx-background-color: white;
-    -fx-border-color: #cccccc;
+.text-area .scroll-pane {
+    -fx-background-color: #ffffff;
 }
 
-.combo-box:hover {
-    -fx-border-color: #4CAF50;
-}
-
-/* ===== TextField (поиск) ===== */
-.text-field {
-    -fx-background-color: white;
-    -fx-text-fill: #333333;
-    -fx-border-color: #cccccc;
-    -fx-border-radius: 4;
-}
-
-/* ===== ProgressBar ===== */
-#progressBar {
-    -fx-accent: #2196F3;
+.text-area .scroll-pane .viewport {
+    -fx-background-color: #ffffff;
 }
 
 /* ===== SplitPane ===== */
 .split-pane {
-    -fx-background-color: #f5f5f5;
+    -fx-background-color: #fafbfc;
 }
 
 .split-pane-divider {
-    -fx-background-color: #cccccc;
+    -fx-background-color: #e8eaed;
 }
 
-/* ===== Hyperlink ===== */
-.hyperlink {
-    -fx-text-fill: #1976d2;
+.split-pane > .split-pane-divider {
+    -fx-background-color: #e8eaed;
+    -fx-background-insets: 0;
 }
 
-.hyperlink:hover {
-    -fx-text-fill: #1565c0;
+/* ===== Кнопки (общая база) ===== */
+.button {
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #334155;
+    -fx-border-width: 1;
+    -fx-border-color: #e2e8f0;
 }
-/* ===== Нейтральная кнопка ===== */
-.button-neutral {
-    -fx-background-color: #9e9e9e;
+
+.button:hover {
+    -fx-background-color: #e2e8f0;
+}
+
+.button:pressed {
+    -fx-background-color: #cbd5e1;
+}
+
+/* Иконки — перебиваем */
+.icon-button {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+}
+
+/* ===== Default ===== */
+.button.button-default {
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #334155;
+    -fx-border-width: 1;
+    -fx-border-color: #e2e8f0;
+}
+
+.button.button-default:hover {
+    -fx-background-color: #e2e8f0;
+}
+
+.button.button-default:pressed {
+    -fx-background-color: #cbd5e1;
+}
+
+/* ===== Subtle ===== */
+.button.button-subtle {
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #64748b;
+    -fx-border-width: 1;
+    -fx-border-color: #e2e8f0;
+}
+
+.button.button-subtle:hover {
+    -fx-background-color: #e2e8f0;
+}
+
+/* ===== Danger ===== */
+.button.button-danger {
+    -fx-background-color: #ef4444;
+    -fx-text-fill: #ffffff;
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+}
+
+.button.button-danger:hover {
+    -fx-background-color: #dc2626;
+}
+
+.button.button-danger:pressed {
+    -fx-background-color: #b91c1c;
+}
+
+/* ===== Danger Outline ===== */
+.button.button-danger-outline {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ef4444;
+    -fx-border-color: #fca5a5;
+    -fx-border-width: 1.5;
+}
+
+.button.button-danger-outline:hover {
+    -fx-background-color: #fef2f2;
+    -fx-border-color: #ef4444;
+}
+
+/* ===== Primary ===== */
+.button.button-primary {
+    -fx-background-color: linear-gradient(to bottom, #3b82f6, #2563eb);
+    -fx-text-fill: #ffffff;
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+    -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.3), 6, 0, 0, 2);
+}
+
+.button.button-primary:hover {
+    -fx-background-color: linear-gradient(to bottom, #2563eb, #1d4ed8);
+    -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.4), 10, 0, 0, 3);
+}
+
+.button.button-primary:pressed {
+    -fx-background-color: #1d4ed8;
+    -fx-effect: none;
+}
+
+/* ===== Neutral ===== */
+.button.button-neutral {
+    -fx-background-color: #94a3b8;
     -fx-text-fill: white;
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
 }
 
-.button-neutral:hover {
-    -fx-background-color: #757575;
+.button.button-neutral:hover {
+    -fx-background-color: #64748b;
 }
 
-.button-neutral:pressed {
-    -fx-background-color: #616161;
+.button.button-neutral:pressed {
+    -fx-background-color: #475569;
 }
+
+/*
