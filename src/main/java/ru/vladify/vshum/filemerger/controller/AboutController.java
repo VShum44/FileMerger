@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.vladify.vshum.filemerger.config.AppConfig;
 
-import java.awt.*;
+import java.awt.Desktop;
 import java.net.URI;
 
 /**

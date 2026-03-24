@@ -9,14 +9,8 @@ import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
@@ -39,8 +33,11 @@ import ru.vladify.vshum.filemerger.service.interfaces.MergeService;
 import ru.vladify.vshum.filemerger.util.DialogHelper;
 import ru.vladify.vshum.filemerger.util.FileInfoCell;
 import ru.vladify.vshum.filemerger.util.ThemeManager;
+import ru.vladify.vshum.filemerger.util.helpers.BindingHelper;
+import ru.vladify.vshum.filemerger.util.helpers.ContextMenuHelper;
+import ru.vladify.vshum.filemerger.util.helpers.HotkeyHelper;
+import ru.vladify.vshum.filemerger.util.helpers.StatusBarHelper;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.MalformedInputException;
@@ -164,21 +161,21 @@ public class MainController {
                         return;
                     }
 
-                    String fileContext = "";
+                    String fileContent = "";
 
                     try {
-                        fileContext = Files.readString(selectedValue.getFile().toPath());
+                        fileContent = Files.readString(selectedValue.getFile().toPath());
                     } catch (MalformedInputException e) {
                         previewArea.setText("[Бинарный файл]");
                     } catch (IOException e) {
                         previewArea.setText("[Ошибка: " + e.getMessage() + "]");
                     }
 
-                    if (fileContext.length() > (int) AppConfig.MAX_PREVIEW) {
-                        fileContext = fileContext.substring(0, (int) AppConfig.MAX_PREVIEW) + "\n\n--- обрезано ---";
+                    if (fileContent.length() > (int) AppConfig.MAX_PREVIEW) {
+                        fileContent = fileContent.substring(0, (int) AppConfig.MAX_PREVIEW) + "\n\n--- обрезано ---";
                     }
 
-                    previewArea.setText(fileContext);
+                    previewArea.setText(fileContent);
                     previewArea.positionCaret(0);
 
                 }));
@@ -230,7 +227,7 @@ public class MainController {
      */
     @FXML
     private void onClear() {
-        if (files.size() > 0) {
+        if (!files.isEmpty()) {
             boolean isDelete = DialogHelper.askConfirmation("Удалить все файлы", "Добавлено %d файлов. Удалить их все?".formatted(files.size()));
             if (!isDelete) {
                 return;
@@ -337,40 +334,10 @@ public class MainController {
      * количество файлов, строк и общий размер.
      */
     private void updateStatus() {
-        long totalLines = files.stream().mapToLong(FileInfo::getLineCount).sum();
-        long totalSize = files.stream().mapToLong(FileInfo::getSize).sum();
-        long totalChars = files.stream().mapToLong(FileInfo::getCharCount).sum();
-        long totalWords = files.stream().mapToLong(FileInfo::getWordCount).sum();
-
-        // видимых после фильтрации
-        long shownLines = filteredFiles.stream().mapToLong(FileInfo::getLineCount).sum();
-        long shownSize = filteredFiles.stream().mapToLong(FileInfo::getSize).sum();
-        long shownChars = filteredFiles.stream().mapToLong(FileInfo::getCharCount).sum();
-        long shownWords = filteredFiles.stream().mapToLong(FileInfo::getWordCount).sum();
-
-        String formattedSize;
-        String statusLabelText;
-        String labelString = "Файлов: %d | Строк: %d | Символов %d | Слов %d | Размер: %s";
-        if (totalSize == shownSize) {
-            formattedSize = FileInfo.formatSize(totalSize);
-            statusLabelText = labelString.formatted(files.size(), totalLines, totalChars, totalWords, formattedSize);
-        } else {
-            formattedSize = FileInfo.formatSize(shownSize);
-            statusLabelText = labelString.formatted(filteredFiles.size(), shownLines, shownChars, shownWords, formattedSize);
-        }
-
-        statusLabel.setText(statusLabelText);
-
-        if (fileListView.getScene() != null) {
-            Stage stage = (Stage) fileListView.getScene().getWindow();
-            if (files.isEmpty()) {
-                stage.setTitle(AppConfig.APP_NAME);
-            } else {
-                stage.setTitle("%s — %d файл(ов), %d строк, %s".formatted(
-                        AppConfig.APP_NAME, files.size(), totalLines, formattedSize
-                ));
-            }
-        }
+        Stage stage = fileListView.getScene() != null
+                ? (Stage) fileListView.getScene().getWindow()
+                : null;
+        StatusBarHelper.update(files, filteredFiles, statusLabel, stage);
     }
 
     private void updateThemeIcon() {
@@ -555,11 +522,11 @@ public class MainController {
             );
             VBox root = loader.load();
 
-            Stage aboutStage = new Stage();
-            aboutStage.setTitle(title);
-            aboutStage.initModality(Modality.APPLICATION_MODAL);
-            aboutStage.initOwner(fileListView.getScene().getWindow());
-            aboutStage.setResizable(false);
+            Stage modalStage = new Stage();
+            modalStage.setTitle(title);
+            modalStage.initModality(Modality.APPLICATION_MODAL);
+            modalStage.initOwner(fileListView.getScene().getWindow());
+            modalStage.setResizable(false);
 
             Scene scene = new Scene(root);
             // Подключаем те же стили
@@ -567,8 +534,8 @@ public class MainController {
                     fileListView.getScene().getStylesheets()
             );
 
-            aboutStage.setScene(scene);
-            aboutStage.showAndWait();
+            modalStage.setScene(scene);
+            modalStage.showAndWait();
         } catch (IOException e) {
             log.error("Ошибка открытия окна модального окна {}", fileName, e);
         }
@@ -610,35 +577,13 @@ public class MainController {
      * Delete — удалить, Ctrl+A — выделить все.
      */
     private void setupHotkeys() {
-        Scene scene = fileListView.getScene();
-
-        scene.getAccelerators().put(
-                new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN),
-                this::onAddFiles
-        );
-
-        scene.getAccelerators().put(
-                new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN),
-                this::onMerge
-        );
-
-        scene.getAccelerators().put(
-                new KeyCodeCombination(KeyCode.DELETE),
-                this::onRemove
-        );
-
-        scene.getAccelerators().put(
-                new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN),
-                () -> fileListView.getSelectionModel().selectAll()
-        );
-
-        scene.getAccelerators().put(
-                new KeyCodeCombination(KeyCode.UP, KeyCombination.ALT_DOWN),
-                this::onMoveUp
-        );
-
-        scene.getAccelerators().put(
-                new KeyCodeCombination(KeyCode.DOWN, KeyCombination.ALT_DOWN),
+        HotkeyHelper.setup(
+                fileListView.getScene(),
+                fileListView,
+                this::onAddFiles,
+                this::onMerge,
+                this::onRemove,
+                this::onMoveUp,
                 this::onMoveDown
         );
     }
@@ -649,55 +594,13 @@ public class MainController {
      * переместить вверх/вниз, удалить.
      */
     private void setupContextMenu() {
-        ContextMenu menu = new ContextMenu();
-
-        MenuItem openInExplorer = new MenuItem("Открыть в проводнике");
-        openInExplorer.setOnAction(e -> {
-            new Thread(() -> {
-                FileInfo selected = fileListView.getSelectionModel().getSelectedItem();
-                if (selected == null) {
-                    return;
-                }
-                try {
-                    Desktop.getDesktop().open(selected.getFile().getParentFile());
-                } catch (IOException ex) {
-                    log.error("Ошибка открытия файла в папке");
-                    Platform.runLater(() -> DialogHelper.showError("", "Ошибка открытия файла", "Не удалось открыть файл в папке"));
-                }
-            }).start();
-        });
-
-        MenuItem clipboardItem = new MenuItem("Копировать путь");
-        clipboardItem.setOnAction(e -> {
-            FileInfo selected = fileListView.getSelectionModel().getSelectedItem();
-            if (selected == null) {
-                return;
-            }
-            ClipboardContent content = new ClipboardContent();
-            content.putString(selected.getAbsolutePath());
-            Clipboard.getSystemClipboard().setContent(content);
-            showTemporaryStatus("Путь скопирован: " + selected.getAbsolutePath());
-        });
-
-        MenuItem moveUp = new MenuItem("Переместить вверх");
-        moveUp.setOnAction(e -> onMoveUp());
-
-        MenuItem moveDown = new MenuItem("Переместить вниз");
-        moveDown.setOnAction(e -> onMoveDown());
-
-        MenuItem deleteItem = new MenuItem("Удалить");
-        deleteItem.setOnAction(e -> onRemove());
-
-        menu.getItems().addAll(
-                openInExplorer,
-                clipboardItem,
-                new SeparatorMenuItem(),
-                moveUp,
-                moveDown,
-                new SeparatorMenuItem(),
-                deleteItem
+        ContextMenu menu = ContextMenuHelper.create(
+                fileListView,
+                this::onMoveUp,
+                this::onMoveDown,
+                this::onRemove,
+                this::showTemporaryStatus
         );
-
         fileListView.setContextMenu(menu);
     }
 
@@ -715,43 +618,7 @@ public class MainController {
      * Привязки обновляются автоматически при изменении списка или выделения.
      */
     private void setupBindings() {
-
-        StringBinding filesCountToMerge = new StringBinding() {
-            {
-                bind(files);
-            }
-
-            @Override
-            protected String computeValue() {
-                if (files.isEmpty()) {
-                    return "Склеить";
-                } else {
-                    return "Склеить (%d)".formatted(files.size());
-                }
-            }
-        };
-        mergeButton.textProperty().bind(filesCountToMerge);
-
-        ObservableList<FileInfo> selectedItems = fileListView.getSelectionModel().getSelectedItems();
-
-        StringBinding selectedFiles = new StringBinding() {
-            {
-                bind(selectedItems);
-            }
-
-            @Override
-            protected String computeValue() {
-                return selectedItems.isEmpty() ? "Удалить" : "Удалить (%d)".formatted(selectedItems.size());
-            }
-        };
-
-        removeButton.textProperty().bind(selectedFiles);
-    }
-
-    @FXML
-    private void onSortChanged() {
-        applySort();
-        log.info("Сортировка: {}", sortComboBox.getValue());
+        BindingHelper.setup(files,fileListView, mergeButton, removeButton);
     }
 
     /**

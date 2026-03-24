@@ -4,6 +4,8 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.vladify.vshum.filemerger.config.AppConfig;
 import ru.vladify.vshum.filemerger.config.MainWindow;
 import ru.vladify.vshum.filemerger.controller.MainController;
@@ -14,7 +16,13 @@ import java.util.prefs.Preferences;
 
 public class FileMergerApp extends Application {
 
+    private static final Logger log = LoggerFactory.getLogger(FileMergerApp.class);
     private final Preferences prefs = Preferences.userNodeForPackage(getClass());
+
+    private static final String KEY_WINDOW_X = "window_x";
+    private static final String KEY_WINDOW_Y = "window_y";
+    private static final String KEY_WINDOW_WIDTH = "window_width";
+    private static final String KEY_WINDOW_HEIGHT = "window_height";
 
     public static void main(String[] args) {
         launch(args);
@@ -70,24 +78,24 @@ public class FileMergerApp extends Application {
     }
 
     private void saveMainWindowSize(Stage primaryStage) {
-        prefs.putDouble("window_x", primaryStage.getX());
-        prefs.putDouble("window_y", primaryStage.getY());
-        prefs.putDouble("window_width", primaryStage.getWidth());
-        prefs.putDouble("window_height", primaryStage.getHeight());
+        prefs.putDouble(KEY_WINDOW_X, primaryStage.getX());
+        prefs.putDouble(KEY_WINDOW_Y, primaryStage.getY());
+        prefs.putDouble(KEY_WINDOW_WIDTH, primaryStage.getWidth());
+        prefs.putDouble(KEY_WINDOW_HEIGHT, primaryStage.getHeight());
 
         try {
             prefs.flush(); // Принудительно сохраняем
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Не удалось сохранить размер окна", e);
         }
     }
 
     private MainWindow getDefaultMainWindowSize() {
         return new MainWindow(
-                prefs.getDouble("window_x", 100),
-                prefs.getDouble("window_y", 100),
-                prefs.getDouble("window_width", 800),
-                prefs.getDouble("window_height", 600)
+                prefs.getDouble(KEY_WINDOW_X, 100),
+                prefs.getDouble(KEY_WINDOW_Y, 100),
+                prefs.getDouble(KEY_WINDOW_WIDTH, 800),
+                prefs.getDouble(KEY_WINDOW_HEIGHT, 600)
         );
     }
 }
