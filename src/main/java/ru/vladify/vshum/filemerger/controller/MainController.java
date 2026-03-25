@@ -2,7 +2,6 @@ package ru.vladify.vshum.filemerger.controller;
 
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
-import javafx.beans.binding.StringBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -13,7 +12,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.*;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -545,6 +546,12 @@ public class MainController {
     private void onConfigureExtensions() {
         log.debug("onConfigureExtensions() called");
         openModalWindow("extensions-view.fxml","Настройка расширений");
+    }
+
+    @FXML
+    private void onSortChanged() {
+        applySort();
+        log.info("Сортировка: {}", sortComboBox.getValue());
     }
 
     /**

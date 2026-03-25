@@ -42,7 +42,7 @@ public class FileMergerApp extends Application {
         try {
             scene = new Scene(loader.load());
         } catch (IOException e) {
-            throw new RuntimeException("Проблема загрузки сцены");
+            log.error("Проблема загрузки сцены", e);
         }
         // Подключаем CSS
         scene.getStylesheets().add(getClass().getResource(AppConfig.DEFAULT_PATH_TO_STYLE + "style.css").toExternalForm());
